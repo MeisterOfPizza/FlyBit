@@ -1,0 +1,23 @@
+fileFormatVersion: 2
+guid: 5d0b3222cf124224eabd3bcf29963e1a
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Josefin Sans Thin
+  fontNames:
+  - Josefin Sans Thin
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 1374bc118df315646928a4e4c3f111a9, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
