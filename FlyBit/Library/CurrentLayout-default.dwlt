@@ -1376,7 +1376,7 @@ MonoBehaviour:
       scrollPos: {x: 0, y: 0}
       m_SelectedIDs: 
       m_LastClickedID: 0
-      m_ExpandedIDs: 6afbffff
+      m_ExpandedIDs: 6457fbff8c62fbffa6cbfbffcecbfbff44c0feff6afbffff
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -1436,9 +1436,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: 13.06402, y: -10.573871, z: -7.5}
+    m_Target: {x: 165.97397, y: -47.914555, z: -117.15625}
     speed: 2
-    m_Value: {x: 13.06402, y: -10.573871, z: -7.5}
+    m_Value: {x: 165.97397, y: -47.914555, z: -117.15625}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -1471,9 +1471,9 @@ MonoBehaviour:
     speed: 2
     m_Value: {x: 0, y: 0, z: 0, w: 1}
   m_Size:
-    m_Target: 65.99231
+    m_Target: 126.56197
     speed: 2
-    m_Value: 65.99231
+    m_Value: 126.56197
   m_Ortho:
     m_Target: 1
     speed: 2
@@ -1527,7 +1527,7 @@ MonoBehaviour:
   m_ViewDataDictionary: {fileID: 0}
   m_LockTracker:
     m_IsLocked: 0
-  m_LastSelectedObjectID: 52402
+  m_LastSelectedObjectID: -72192
 --- !u!114 &29
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -1696,7 +1696,7 @@ MonoBehaviour:
   m_StartGridSize: 65
   m_LastFolders: []
   m_LastFoldersGridSize: 65
-  m_LastProjectPath: C:\Users\Public\Documents\Unity Projects\Games\FlyBit
+  m_LastProjectPath: C:\Users\Public\Documents\Unity Projects\Games\FlyBit\FlyBit
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
@@ -1728,7 +1728,7 @@ MonoBehaviour:
       m_Icon: {fileID: 0}
       m_ResourceFile: 
   m_AssetTreeState:
-    scrollPos: {x: 0, y: 624}
+    scrollPos: {x: 0, y: 672}
     m_SelectedIDs: 
     m_LastClickedID: 0
     m_ExpandedIDs: ffffffff0000000044340000a83500003c3600008c370000a63800000039000070390000683b0000c63b0000023c00001a3c0000743c0000903c0000a8400000

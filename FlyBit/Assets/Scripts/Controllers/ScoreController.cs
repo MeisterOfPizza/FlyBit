@@ -49,6 +49,10 @@ namespace FlyBit.Controllers
             timeAlive        = 0f;
             distanceTraveled = 0f;
 
+            scoreText.text            = "SCORE 0";
+            timeAliveText.text        = "TIME ALIVE: 0 SEC";
+            distanceTraveledText.text = "0 M";
+
             timeAliveCounterIsPaused = false;
         }
 
@@ -85,16 +89,6 @@ namespace FlyBit.Controllers
 
                     timeAliveText.text = formattedTimeAlive;
                 }
-
-                //print("X: " + mainCamera.ScreenToWorldPoint(distanceTraveledText.transform.position).x);
-                //print("Y: " + PlayerController.Singleton.GetWallSection(mainCamera.ScreenToWorldPoint(distanceTraveledText.transform.position))?.transform.position.y);
-                distanceTraveledText.transform.position = new Vector2(distanceTraveledText.transform.position.x,
-                                                                      mainCamera.WorldToViewportPoint(
-                                                                          PlayerController.Singleton.GetWallSection(
-                                                                              mainCamera.ScreenToWorldPoint(distanceTraveledText.transform.position)
-                                                                              )?.transform.position ?? Vector3.zero
-                                                                          ).y
-                                                                      );
             }
         }
 
@@ -113,7 +107,7 @@ namespace FlyBit.Controllers
         public void AddDistanceTraveled(float distance)
         {
             distanceTraveled         += distance;
-            distanceTraveledText.text = distanceTraveled.ToString("F1") + " M";
+            distanceTraveledText.text = distanceTraveled.ToString("F0") + " M";
         }
 
     }

@@ -14,7 +14,6 @@ namespace FlyBit.Templates
 
         [Header("References")]
         [SerializeField] private GameObject wallColumnPrefab;
-        [SerializeField] private GameObject scorePointPrefab;
 
         [Header("Values")]
         [SerializeField, Range(0f, 1f)] private float minNormalizedDifficulty = 0.1f;
@@ -23,6 +22,11 @@ namespace FlyBit.Templates
         [SerializeField, Range(5, 100)] private int   maxColumnCount          = 10;
         [SerializeField, Range(0f, 1f)] private float maxScorePointFrequency  = 0.1f;
         [SerializeField, Range(1, 100)] private int   maxPowerUpCount         = 2;
+
+        [Space]
+        [SerializeField] private float minWallColumnSpaceHeight = 2.5f;
+        [SerializeField] private float maxWallColumnSpaceHeight = 5f;
+        [SerializeField] private float wallFormationScale       = 1f;
 
         [Space]
         [SerializeField] private SectionPowerUp[] sectionPowerUps;
@@ -84,7 +88,8 @@ namespace FlyBit.Templates
             Circle = 4,
             Climb  = 8,
             Drop   = 16,
-            Edge   = 32
+            Box    = 32,
+            Curve  = 64
         }
 
         #endregion
@@ -96,14 +101,6 @@ namespace FlyBit.Templates
             get
             {
                 return wallColumnPrefab;
-            }
-        }
-
-        public GameObject ScorePointPrefab
-        {
-            get
-            {
-                return scorePointPrefab;
             }
         }
 
@@ -152,6 +149,30 @@ namespace FlyBit.Templates
             get
             {
                 return maxPowerUpCount;
+            }
+        }
+
+        public float MinWallColumnSpaceHeight
+        {
+            get
+            {
+                return minWallColumnSpaceHeight;
+            }
+        }
+
+        public float MaxWallColumnSpaceHeight
+        {
+            get
+            {
+                return maxWallColumnSpaceHeight;
+            }
+        }
+
+        public float WallFormationScale
+        {
+            get
+            {
+                return wallFormationScale;
             }
         }
 

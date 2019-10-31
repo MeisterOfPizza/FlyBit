@@ -226,7 +226,7 @@ GameObject:
   - component: {fileID: 7992718402126978295}
   - component: {fileID: 2099017868080098408}
   m_Layer: 24
-  m_Name: Wall_Section
+  m_Name: Wall_Column
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -262,7 +262,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   topWall: {fileID: 8758200119371419583}
   bottomWall: {fileID: 8758200119857769403}
-  screenHeight: 5
+  screenHeight: 6
   moveWallTime: 1.5
 --- !u!61 &2099017868080098408
 BoxCollider2D:

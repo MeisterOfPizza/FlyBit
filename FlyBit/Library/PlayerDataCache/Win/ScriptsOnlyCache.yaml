@@ -1,6 +1,7 @@
 ScriptsOnlyBuild:
   usedScripts:
     Assembly-CSharp.dll:
+    - FlyBit.Controllers.DifficultyController
     - FlyBit.Controllers.EffectsController
     - FlyBit.Controllers.GameController
     - FlyBit.Controllers.MapController
@@ -9,7 +10,9 @@ ScriptsOnlyBuild:
     - FlyBit.Extensions.FollowAndTrack
     - FlyBit.Map.ScorePoint
     - FlyBit.Map.WallColumn
+    - FlyBit.Map.WallSection
     - FlyBit.PowerUps.InvertPowerUp
+    - FlyBit.Templates.SectionTemplate
     Unity.2D.Tilemap.Editor.dll:
     - UnityEditor.Tilemaps.GridPaintingState
     - UnityEditor.Tilemaps.GridPaletteBrushes
@@ -99,61 +102,67 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 9832}
     - Class: 114
-      Script: {instanceID: 9862}
+      Script: {instanceID: 9864}
     - Class: 114
-      Script: {instanceID: 9888}
+      Script: {instanceID: 9890}
     - Class: 114
-      Script: {instanceID: 9894}
+      Script: {instanceID: 9896}
     - Class: 114
-      Script: {instanceID: 9998}
+      Script: {instanceID: 10000}
     - Class: 114
-      Script: {instanceID: 10032}
+      Script: {instanceID: 10034}
     - Class: 114
-      Script: {instanceID: 10046}
+      Script: {instanceID: 10048}
     - Class: 114
-      Script: {instanceID: 10104}
+      Script: {instanceID: 10106}
     - Class: 114
-      Script: {instanceID: 10258}
+      Script: {instanceID: 10182}
     - Class: 114
-      Script: {instanceID: 10450}
+      Script: {instanceID: 10262}
     - Class: 114
-      Script: {instanceID: 10504}
+      Script: {instanceID: 10272}
     - Class: 114
-      Script: {instanceID: 10942}
+      Script: {instanceID: 10456}
     - Class: 114
-      Script: {instanceID: 10994}
+      Script: {instanceID: 10510}
     - Class: 114
-      Script: {instanceID: 11040}
+      Script: {instanceID: 10948}
     - Class: 114
-      Script: {instanceID: 11194}
+      Script: {instanceID: 11000}
     - Class: 114
-      Script: {instanceID: 11516}
+      Script: {instanceID: 11046}
     - Class: 114
-      Script: {instanceID: 11548}
+      Script: {instanceID: 11200}
     - Class: 114
-      Script: {instanceID: 11728}
+      Script: {instanceID: 11524}
     - Class: 114
-      Script: {instanceID: 11844}
+      Script: {instanceID: 11556}
     - Class: 114
-      Script: {instanceID: 12080}
+      Script: {instanceID: 11736}
     - Class: 114
-      Script: {instanceID: 12100}
+      Script: {instanceID: 11852}
     - Class: 114
-      Script: {instanceID: 12176}
+      Script: {instanceID: 12088}
     - Class: 114
-      Script: {instanceID: 12412}
+      Script: {instanceID: 12108}
     - Class: 114
-      Script: {instanceID: 12484}
+      Script: {instanceID: 12184}
     - Class: 114
-      Script: {instanceID: 12532}
+      Script: {instanceID: 12420}
     - Class: 114
-      Script: {instanceID: 12842}
+      Script: {instanceID: 12492}
     - Class: 114
-      Script: {instanceID: 13008}
+      Script: {instanceID: 12540}
     - Class: 114
-      Script: {instanceID: 13210}
+      Script: {instanceID: 12546}
     - Class: 114
-      Script: {instanceID: 13278}
+      Script: {instanceID: 12850}
+    - Class: 114
+      Script: {instanceID: 13016}
+    - Class: 114
+      Script: {instanceID: 13218}
+    - Class: 114
+      Script: {instanceID: 13286}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -259,7 +268,7 @@ ScriptsOnlyBuild:
     className: MotionBlur
   - hash:
       serializedVersion: 2
-      Hash: ca7a1f93aa7039ec73b63b7b589dc3e5
+      Hash: 3c54cb6a598eb3d6653c8b244fa36b32
     assemblyName: Assembly-CSharp.dll
     namespaceName: FlyBit.Controllers
     className: GameController
@@ -281,6 +290,12 @@ ScriptsOnlyBuild:
     assemblyName: Unity.RenderPipelines.Lightweight.Runtime.dll
     namespaceName: UnityEngine.Experimental.Rendering.LWRP
     className: Renderer2DData
+  - hash:
+      serializedVersion: 2
+      Hash: 535a03af516d57d4d280fb053e59e69b
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: FlyBit.Templates
+    className: SectionTemplate
   - hash:
       serializedVersion: 2
       Hash: 72712369a7c681ad84fc255a5ec0b333
@@ -311,6 +326,12 @@ ScriptsOnlyBuild:
     assemblyName: UnityEngine.UI.dll
     namespaceName: UnityEngine.UI
     className: Image
+  - hash:
+      serializedVersion: 2
+      Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: FlyBit.Controllers
+    className: DifficultyController
   - hash:
       serializedVersion: 2
       Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
@@ -583,7 +604,7 @@ ScriptsOnlyBuild:
     className: RawImage
   - hash:
       serializedVersion: 2
-      Hash: 89eddbcc1feed09449fae390b03a1492
+      Hash: 217719062f637f5293c828a403deafd1
     assemblyName: Assembly-CSharp.dll
     namespaceName: FlyBit.Controllers
     className: EffectsController
@@ -643,7 +664,7 @@ ScriptsOnlyBuild:
     className: Physics2DRaycaster
   - hash:
       serializedVersion: 2
-      Hash: b01bbd68fc2511770e7638805c7b85c1
+      Hash: e476b516609a410773d3a3b555a00c48
     assemblyName: Assembly-CSharp.dll
     namespaceName: FlyBit.Controllers
     className: PlayerController
@@ -691,7 +712,7 @@ ScriptsOnlyBuild:
     className: DataPrivacyButton
   - hash:
       serializedVersion: 2
-      Hash: 16256319c20d5719fed1525c1c418fd6
+      Hash: 34bd016f5ebe78b7a41a620a805483ab
     assemblyName: Assembly-CSharp.dll
     namespaceName: FlyBit.Controllers
     className: MapController
@@ -709,7 +730,7 @@ ScriptsOnlyBuild:
     className: GraphicRaycaster
   - hash:
       serializedVersion: 2
-      Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
+      Hash: 12b4153a8055b163bf6aa8f3ad93c2a1
     assemblyName: Assembly-CSharp.dll
     namespaceName: FlyBit.Map
     className: WallSection
@@ -851,13 +872,7 @@ ScriptsOnlyBuild:
     assemblyName: Unity.Timeline.dll
     namespaceName: UnityEngine.Timeline
     className: PlayableTrack
-  - hash:
-      serializedVersion: 2
-      Hash: dda6b22557f3d2810af8cc524c4dd2d9
-    assemblyName: Assembly-CSharp.dll
-    namespaceName: FlyBit.Templates
-    className: SectionTemplate
   platform: 5
   scenePathNames:
   - Assets/Scenes/Game.unity
-  playerPath: C:/Users/Public/Documents/Unity Projects/Games/FlyBit/Builds/Dev/FlyBit.exe
+  playerPath: C:/Users/Public/Documents/Unity Projects/Games/FlyBit/FlyBit/Builds/Dev/FlyBit.exe

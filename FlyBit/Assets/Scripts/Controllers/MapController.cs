@@ -1,6 +1,5 @@
 ﻿using FlyBit.Extensions;
 using FlyBit.Map;
-using FlyBit.PowerUps;
 using FlyBit.Templates;
 using System.Collections;
 using System.Collections.Generic;
@@ -24,32 +23,16 @@ namespace FlyBit.Controllers
         [SerializeField] private Transform playerTransform;
 
         [Space]
+        [SerializeField] private SectionTemplate   startSectionTemplate;
         [SerializeField] private SectionTemplate   defaultSectionTemplate;
         [SerializeField] private SectionTemplate[] sectionTemplates;
 
         [Header("Prefabs")]
         [SerializeField] private GameObject wallSectionPrefab;
-        /*
-        [SerializeField] private GameObject   wallPrefab;
-        [SerializeField] private GameObject   scorePointPrefab;
-        [SerializeField] private GameObject[] powerUpPrefabs;
-        */
+        [SerializeField] private GameObject scorePointPrefab;
 
         [Header("Values")]
         [SerializeField] private float playerSeeRadius = 20f;
-
-        /*
-        [Space]
-        [SerializeField] private float minMapMiddleSpace = 2.5f;
-        [SerializeField] private float maxMapMiddleSpace = 5f;
-        [Space]
-        [SerializeField]                private int   scorePointCount       = 5;
-        [SerializeField, Range(0f, 1f)] private float scorePointSpawnChance = 0.2f;
-
-        [Space]
-        [SerializeField]                private int   powerUpCount        = 2;
-        [SerializeField, Range(0f, 1f)] private float powerUpsSpawnChance = 0.05f;
-        */
 
         #endregion
 
@@ -63,52 +46,38 @@ namespace FlyBit.Controllers
             }
         }
 
+        public int ScorePointsAvailableToSpawn
+        {
+            get
+            {
+                return scorePointPool.PooledItemCount;
+            }
+        }
+
         #endregion
 
         #region Private variables
 
-        //private GameObjectPool<WallColumn> wallPool;
-        //private GameObjectPool<ScorePoint> scorePointPool;
-        //private GameObjectPool<PowerUp>[]  powerUpPools;
-
         private Dictionary<SectionTemplate, GameObjectPool<WallSection>> wallSectionTemplatePairs;
         private GameObjectPool<WallSection>[]                            wallSectionPools;
+        private GameObjectPool<ScorePoint>                               scorePointPool;
 
         private WallSection lastWallSectionSpawned;
 
         #endregion
 
+        #region Lifecycle
+
         public override void OnAwake()
         {
-            /*
-            wallPool       = new GameObjectPool<WallColumn>(mapContainer, wallPrefab, 500);
-            scorePointPool = new GameObjectPool<ScorePoint>(mapContainer, scorePointPrefab, scorePointCount);
-
-            foreach (var scorePoint in scorePointPool.PooledItemsNonAloc)
-            {
-                scorePoint.Initialize(scorePointPool.PoolItem);
-            }
-
-            powerUpPools = new GameObjectPool<PowerUp>[powerUpPrefabs.Length];
-            for (int i = 0; i < powerUpPrefabs.Length; i++)
-            {
-                powerUpPools[i] = new GameObjectPool<PowerUp>(mapContainer, powerUpPrefabs[i], powerUpCount);
-
-                foreach (var powerUp in powerUpPools[i].PooledItemsNonAloc)
-                {
-                    powerUp.Initialize(powerUpPools[i].PoolItem);
-                }
-            }
-            */
-
             // Create a new array with the default section template added in and sort it by spawn chance.
-            var templates            = sectionTemplates.Concat(new SectionTemplate[] { defaultSectionTemplate }).OrderBy(st => st.SpawnChance).ToArray();
+            var templates            = (new SectionTemplate[] { startSectionTemplate, defaultSectionTemplate }).Concat(sectionTemplates.OrderBy(st => st.SpawnChance)).ToArray();
             wallSectionTemplatePairs = new Dictionary<SectionTemplate, GameObjectPool<WallSection>>(templates.Length);
             wallSectionPools         = new GameObjectPool<WallSection>[templates.Length];
 
             for (int i = 0; i < templates.Length; i++)
             {
-                var pool = new GameObjectPool<WallSection>(mapContainer, wallSectionPrefab, 5);
+                var pool = new GameObjectPool<WallSection>(mapContainer, wallSectionPrefab, templates[i] == defaultSectionTemplate ? 20 : 3);
                 wallSectionTemplatePairs.Add(templates[i], pool);
                 wallSectionPools[i] = pool;
 
@@ -117,6 +86,13 @@ namespace FlyBit.Controllers
                     section.Initialize(templates[i]);
                 }
             }
+
+            scorePointPool = new GameObjectPool<ScorePoint>(mapContainer, scorePointPrefab, templates.Length * 50);
+
+            foreach (var scorePoint in scorePointPool.PooledItemsNonAloc)
+            {
+                scorePoint.Initialize(scorePointPool);
+            }
         }
 
         public void Begin()
@@ -124,13 +100,31 @@ namespace FlyBit.Controllers
             ResetAll();
             BuildMap();
 
+            foreach (var pool in wallSectionPools)
+            {
+                foreach (var wallSection in pool.ActiveItemsNonAloc)
+                {
+                    wallSection.OpenCloseSection(false);
+                }
+            }
+
             StartCoroutine("SpawnCycle");
         }
 
         public void End()
         {
             StopAllCoroutines();
+
+            foreach (var pool in wallSectionPools)
+            {
+                foreach (var wallSection in pool.ActiveItemsNonAloc)
+                {
+                    wallSection.OpenCloseSection(true);
+                }
+            }
         }
+
+        #endregion
 
         private IEnumerator SpawnCycle()
         {
@@ -144,65 +138,28 @@ namespace FlyBit.Controllers
                         {
                             wallSection.Despawn();
                             pool.PoolItem(wallSection);
-
-                            WallSection nextWallSection = GetWallSection(Random.value);
-                            nextWallSection.Spawn(lastWallSectionSpawned.EndPoint);
-
-                            lastWallSectionSpawned = nextWallSection;
                         }
                     }
                 }
 
-                /*
-                foreach (var wall in wallPool.ActiveItems)
+                while (lastWallSectionSpawned.EndPoint.x < playerTransform.position.x + playerSeeRadius)
                 {
-                    if (!wall.IsMoving && Mathf.FloorToInt(wall.transform.position.x) < Mathf.FloorToInt(playerTransform.position.x - playerSeeRadius / 3f))
-                    {
-                        wall.OpenCloseSection(false);
+                    WallSection nextWallSection = GetWallSection(Random.value);
+                    nextWallSection.Spawn(lastWallSectionSpawned.EndPoint);
 
-                        var newWall = wallPool.GetItem();
-                        newWall.Spawn(new Vector2(wallPool.ActiveItemsNonAloc[wallPool.ActiveItemCount - 2].transform.position.x + 1f, 1.5f * Mathf.Sin(ScoreController.Singleton.TimeAlive)), Random.Range(minMapMiddleSpace, maxMapMiddleSpace));
-
-                        if (scorePointPool.HasAvailableItems && Random.value <= scorePointSpawnChance)
-                        {
-                            var scorePoint = scorePointPool.GetItem();
-                            scorePoint.transform.position = newWall.transform.position;
-                        }
-                        else if (Random.value <= powerUpsSpawnChance)
-                        {
-                            int powerUpType = Random.Range(0, powerUpPrefabs.Length);
-
-                            if (powerUpPools[powerUpType].HasAvailableItems)
-                            {
-                                var powerUp = powerUpPools[powerUpType].GetItem();
-                                powerUp.transform.position = newWall.transform.position;
-                            }
-                        }
-                    }
+                    lastWallSectionSpawned = nextWallSection;
                 }
-
-                foreach (var scorePoint in scorePointPool.ActiveItems)
-                {
-                    if (Mathf.FloorToInt(scorePoint.transform.position.x) < Mathf.FloorToInt(playerTransform.position.x - playerSeeRadius))
-                    {
-                        scorePointPool.PoolItem(scorePoint);
-                    }
-                }
-
-                foreach (var pool in powerUpPools)
-                {
-                    foreach (var powerUp in pool.ActiveItems)
-                    {
-                        if (Mathf.FloorToInt(powerUp.transform.position.x) < Mathf.FloorToInt(playerTransform.position.x - playerSeeRadius))
-                        {
-                            pool.PoolItem(powerUp);
-                        }
-                    }
-                }
-                */
 
                 yield return new WaitForEndOfFrame();
             }
+        }
+
+        #region Building the map
+
+        public void RebuildMap()
+        {
+            ResetAll();
+            BuildMap();
         }
 
         private void ResetAll()
@@ -218,34 +175,22 @@ namespace FlyBit.Controllers
             }
 
             lastWallSectionSpawned = null;
-
-            /*
-            wallPool.PoolAllItems();
-
-            foreach (var wall in wallPool.AllItems)
-            {
-                wall.Initialize(wallPool.PoolItem);
-            }
-
-            int current = Mathf.FloorToInt(playerTransform.position.x - playerSeeRadius);
-
-            while (current < playerTransform.position.x + playerSeeRadius)
-            {
-                var wall = wallPool.GetItem();
-                wall.Spawn(new Vector2(current, 0f), Random.Range(minMapMiddleSpace, maxMapMiddleSpace));
-
-                current++;
-            }
-            */
         }
 
         private void BuildMap()
         {
             Vector2 current = new Vector2(playerTransform.position.x - playerSeeRadius, 0f);
 
+            WallSection wallSection = wallSectionTemplatePairs[startSectionTemplate].GetItem();
+            wallSection.Spawn(current);
+
+            current = wallSection.EndPoint;
+
+            lastWallSectionSpawned = wallSection;
+
             while (current.x < playerTransform.position.x + playerSeeRadius)
             {
-                WallSection wallSection = GetWallSection(Random.value);
+                wallSection = wallSectionTemplatePairs[defaultSectionTemplate].GetItem();
                 wallSection.Spawn(current);
 
                 current = wallSection.EndPoint;
@@ -254,20 +199,31 @@ namespace FlyBit.Controllers
             }
         }
 
+        #endregion
+
+        #region Helpers
+
         private WallSection GetWallSection(float value)
         {
-            int i = wallSectionTemplatePairs.Count - 1;
+            int i = wallSectionTemplatePairs.Count;
             foreach (var pair in wallSectionTemplatePairs)
             {
                 if (pair.Key.SpawnChance >= value && pair.Key.MinNormalizedDifficulty >= DifficultyController.Singleton.NormalizedDifficulty)
                 {
-                    return wallSectionTemplatePairs.ElementAt(Random.Range(0, i)).Value.GetItem();
+                    var valuablePairs = wallSectionTemplatePairs.Take(i).Where(p => p.Value.HasAvailableItems);
+
+                    return valuablePairs.Count() > 0 ? valuablePairs.ElementAt(Random.Range(2, valuablePairs.Count())).Value.GetItem() : wallSectionTemplatePairs[defaultSectionTemplate].GetItem();
                 }
 
                 i--;
             }
 
             return wallSectionTemplatePairs[defaultSectionTemplate].GetItem();
+        }
+
+        public ScorePoint GetScorePoint()
+        {
+            return scorePointPool.GetItem();
         }
 
         public void SetMapColor(Color color)
@@ -279,7 +235,14 @@ namespace FlyBit.Controllers
                     wallSection.SetColor(color);
                 }
             }
+
+            foreach (var scorePoint in scorePointPool.AllItems)
+            {
+                scorePoint.SetColor(color);
+            }
         }
+
+        #endregion
 
     }
 

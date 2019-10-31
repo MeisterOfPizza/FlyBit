@@ -1,6 +1,8 @@
-﻿using FlyBit.Extensions;
+﻿using FlyBit.Controllers;
+using FlyBit.Extensions;
 using FlyBit.PowerUps;
 using FlyBit.Templates;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -15,9 +17,7 @@ namespace FlyBit.Map
         #region Editor
 
         [Header("Values")]
-        [SerializeField] private float wallColumnWidth          = 1f;
-        [SerializeField] private float minWallColumnSpaceHeight = 2.5f;
-        [SerializeField] private float maxWallColumnSpaceHeight = 5f;
+        [SerializeField] private float wallColumnWidth = 1f;
 
         #endregion
 
@@ -38,25 +38,22 @@ namespace FlyBit.Map
         private SectionTemplate template;
 
         private GameObjectPool<WallColumn> wallPool;
-        private GameObjectPool<ScorePoint> scorePointPool;
         private ProbabilityPool<PowerUp>   powerUpPool;
 
         private Vector2 endPoint;
 
+        private ScorePoint[] scorePoints = new ScorePoint[0];
+
         #endregion
+
+        #region Lifecycle
 
         public void Initialize(SectionTemplate sectionTemplate)
         {
             this.template = sectionTemplate;
 
-            wallPool       = new GameObjectPool<WallColumn>(transform, template.WallColumnPrefab, template.MaxColumnCount);
-            scorePointPool = new GameObjectPool<ScorePoint>(transform, template.ScorePointPrefab, Mathf.CeilToInt(template.MaxScorePointFrequency * template.MaxColumnCount));
-            powerUpPool    = new ProbabilityPool<PowerUp>(transform, template.GetPrefabProbabilityPairs(), template.MaxPowerUpCount);
-
-            foreach (var scorePoint in scorePointPool.PooledItemsNonAloc)
-            {
-                scorePoint.Initialize(scorePointPool.PoolItem);
-            }
+            wallPool    = new GameObjectPool<WallColumn>(transform, template.WallColumnPrefab, template.MaxColumnCount);
+            powerUpPool = new ProbabilityPool<PowerUp>(transform, template.GetPrefabProbabilityPairs(), template.MaxPowerUpCount);
 
             foreach (var pool in powerUpPool.GetPools())
             {
@@ -77,14 +74,27 @@ namespace FlyBit.Map
         public void Despawn()
         {
             wallPool.PoolAllItems();
-            scorePointPool.PoolAllItems();
+            powerUpPool.PoolAll();
+
+            foreach (var scorePoint in scorePoints)
+            {
+                scorePoint.Despawn();
+            }
+
             powerUpPool.PoolAll();
         }
 
-        public bool CanDespawn(float despawnThresholdX)
+        public void OpenCloseSection(bool open)
         {
-            return transform.position.x + wallPool.ActiveItemCount * wallColumnWidth < despawnThresholdX;
+            foreach (var wallColumn in wallPool.ActiveItemsNonAloc)
+            {
+                wallColumn.OpenCloseColumn(open);
+            }
         }
+
+        #endregion
+
+        #region Section creation
 
         private void CreateColumnFormation()
         {
@@ -92,61 +102,107 @@ namespace FlyBit.Map
             var possibleFormations = System.Enum.GetValues(typeof(SectionTemplate.SectionWallFormation)).Cast<byte>().Where(f => ((byte)template.PossibleFormations & f) == f);
             var formation          = possibleFormations.ElementAt(Random.Range(0, possibleFormations.Count()));
 
-            var positions = CalculateWallColumnPositions(columnCount, (SectionTemplate.SectionWallFormation)formation);
-
-            for (int i = 0; i < columnCount; i++)
-            {
-                var column = wallPool.GetItem();
-                column.Spawn(positions[i * 3], positions[i * 3 + 1], positions[i * 3 + 2]);
-            }
+            var columnPositions = CreateWallColumns(columnCount, (SectionTemplate.SectionWallFormation)formation);
+            SpawnSectionInteractables(columnPositions);
         }
 
-        private Vector2[] CalculateWallColumnPositions(int columnCount, SectionTemplate.SectionWallFormation formation)
+        private Vector2[] CreateWallColumns(int columnCount, SectionTemplate.SectionWallFormation formation)
         {
-            // Make the array three times as big as columnCount to accommodate for the wall column, top wall and bottom wall position.
-            Vector2[] positions = new Vector2[columnCount * 3];
+            Vector2[] columnPositions = new Vector2[columnCount];
+            // Make the array two times as big as columnCount to accommodate for top wall and bottom wall positions.
+            Vector2[] wallPositions = new Vector2[columnCount * 2];
 
             switch (formation)
             {
                 case SectionTemplate.SectionWallFormation.Line:
-                case SectionTemplate.SectionWallFormation.Climb:
-                case SectionTemplate.SectionWallFormation.Drop:
-                case SectionTemplate.SectionWallFormation.Edge:
-                    for (int i = 0; i < columnCount; i++)
                     {
-                        float spacing = Random.Range(minWallColumnSpaceHeight, maxWallColumnSpaceHeight) / 2f;
+                        for (int i = 0; i < columnCount; i++)
+                        {
+                            float spacing = Random.Range(template.MinWallColumnSpaceHeight, template.MaxWallColumnSpaceHeight) / 2f;
 
-                        positions[i * 3]     = new Vector2(wallColumnWidth * i, 0f);
-                        positions[i * 3 + 1] = new Vector2(0f, spacing);
-                        positions[i * 3 + 2] = new Vector2(0f, -spacing);
+                            columnPositions[i]       = new Vector2(wallColumnWidth * i, 0f);
+                            wallPositions[i * 2]     = new Vector2(0f, spacing);
+                            wallPositions[i * 2 + 1] = new Vector2(0f, -spacing);
+                        }
                     }
                     break;
                 case SectionTemplate.SectionWallFormation.Wave:
                     {
-                        float minSpacing = Random.Range(minWallColumnSpaceHeight, maxWallColumnSpaceHeight) / 2f;
+                        float minSpacing = Random.Range(template.MinWallColumnSpaceHeight, template.MaxWallColumnSpaceHeight) / 2f;
                         float direction  = 1 - Random.Range(1, 3) / 2 * 2; // -1 or 1
 
                         for (int i = 0; i < columnCount; i++)
                         {
-                            float spacing = Mathf.Sin(i / (float)positions.Length * direction) / 2f + minSpacing;
+                            float spacing = Mathf.Sin(i / (float)(columnCount - 1) * direction * Mathf.PI) * template.WallFormationScale;
 
-                            positions[i * 3]     = new Vector2(wallColumnWidth * i, 0f);
-                            positions[i * 3 + 1] = new Vector2(0f, spacing);
-                            positions[i * 3 + 2] = new Vector2(0f, -spacing);
+                            columnPositions[i]       = new Vector2(wallColumnWidth * i, spacing);
+                            wallPositions[i * 2]     = new Vector2(0f, minSpacing);
+                            wallPositions[i * 2 + 1] = new Vector2(0f, -minSpacing);
                         }
                     }
                     break;
                 case SectionTemplate.SectionWallFormation.Circle:
                     {
-                        float minSpacing = Random.Range(minWallColumnSpaceHeight, maxWallColumnSpaceHeight) / 2f;
+                        float minSpacing = Random.Range(template.MinWallColumnSpaceHeight, template.MaxWallColumnSpaceHeight) / 2f;
 
                         for (int i = 0; i < columnCount; i++)
                         {
-                            float spacing = Mathf.Sin(i / (float)positions.Length) / 2f + minSpacing;
+                            float spacing = Mathf.Sin(i / (float)(columnCount - 1) * Mathf.PI) * template.WallFormationScale;
 
-                            positions[i * 3]     = new Vector2(wallColumnWidth * i, 0f);
-                            positions[i * 3 + 1] = new Vector2(0f, spacing);
-                            positions[i * 3 + 2] = new Vector2(0f, -spacing);
+                            columnPositions[i]       = new Vector2(wallColumnWidth * i, 0f);
+                            wallPositions[i * 2]     = new Vector2(0f, spacing + minSpacing);
+                            wallPositions[i * 2 + 1] = new Vector2(0f, -spacing - minSpacing);
+                        }
+                    }
+                    break;
+                case SectionTemplate.SectionWallFormation.Climb:
+                    {
+                        BezierCurve climb   = BezierCurve.CreateSlope(Vector2.zero, new Vector2(columnCount * wallColumnWidth, columnCount * template.WallFormationScale));
+                        float       spacing = Random.Range(template.MinWallColumnSpaceHeight, template.MaxWallColumnSpaceHeight) / 2f;
+
+                        for (int i = 0; i < columnCount; i++)
+                        {
+                            columnPositions[i]       = new Vector2(wallColumnWidth * i, climb.GetPoint(i / (float)(columnCount - 1)).y);
+                            wallPositions[i * 2]     = new Vector2(0f, spacing);
+                            wallPositions[i * 2 + 1] = new Vector2(0f, -spacing);
+                        }
+                    }
+                    break;
+                case SectionTemplate.SectionWallFormation.Drop:
+                    {
+                        BezierCurve drop    = BezierCurve.CreateSlope(Vector2.zero, new Vector2(columnCount * wallColumnWidth, -columnCount * template.WallFormationScale));
+                        float       spacing = Random.Range(template.MinWallColumnSpaceHeight, template.MaxWallColumnSpaceHeight) / 2f;
+
+                        for (int i = 0; i < columnCount; i++)
+                        {
+                            columnPositions[i]       = new Vector2(wallColumnWidth * i, drop.GetPoint(i / (float)(columnCount - 1)).y);
+                            wallPositions[i * 2]     = new Vector2(0f, spacing);
+                            wallPositions[i * 2 + 1] = new Vector2(0f, -spacing);
+                        }
+                    }
+                    break;
+                case SectionTemplate.SectionWallFormation.Box:
+                    {
+                        float spacing = Random.Range(template.MinWallColumnSpaceHeight, template.MaxWallColumnSpaceHeight) / 2f * template.WallFormationScale;
+
+                        for (int i = 0; i < columnCount; i++)
+                        {
+                            columnPositions[i]       = new Vector2(wallColumnWidth * i, 0f);
+                            wallPositions[i * 2]     = new Vector2(0f, spacing);
+                            wallPositions[i * 2 + 1] = new Vector2(0f, -spacing);
+                        }
+                    }
+                    break;
+                case SectionTemplate.SectionWallFormation.Curve:
+                    {
+                        BezierCurve curve   = new BezierCurve(Vector2.zero, new Vector2(columnCount * wallColumnWidth, columnCount * template.WallFormationScale), new Vector2(0f, columnCount * template.WallFormationScale), new Vector2(columnCount * wallColumnWidth, 0f));
+                        float       spacing = Random.Range(template.MinWallColumnSpaceHeight, template.MaxWallColumnSpaceHeight) / 2f;
+
+                        for (int i = 0; i < columnCount; i++)
+                        {
+                            columnPositions[i]       = new Vector2(wallColumnWidth * i, curve.GetPoint(i / (float)(columnCount - 1)).y);
+                            wallPositions[i * 2]     = new Vector2(0f, spacing);
+                            wallPositions[i * 2 + 1] = new Vector2(0f, -spacing);
                         }
                     }
                     break;
@@ -154,21 +210,63 @@ namespace FlyBit.Map
                     break;
             }
 
-            endPoint = (Vector2)transform.position + positions[positions.Length - 3];
+            endPoint = (Vector2)transform.position + columnPositions[columnPositions.Length - 1] + Vector2.right;
 
-            return positions;
+            // Create the wall columns:
+            for (int i = 0; i < columnCount; i++)
+            {
+                var column = wallPool.GetItem();
+                column.Spawn(columnPositions[i], wallPositions[i * 2], wallPositions[i * 2 + 1]);
+            }
+
+            return columnPositions;
         }
+
+        private void SpawnSectionInteractables(Vector2[] columnPositions)
+        {
+            int scorePointCount = Mathf.Min(Random.Range(0, Mathf.FloorToInt(columnPositions.Length * template.MaxScorePointFrequency)), MapController.Singleton.ScorePointsAvailableToSpawn);
+            int powerUpCount    = Random.Range(0, template.MaxPowerUpCount);
+
+            scorePoints = new ScorePoint[scorePointCount];
+
+            // Make a list of all the available columnPosition indexes:
+            List<int> indexes = Enumerable.Range(0, columnPositions.Length).ToList();
+            int indexesToRemove = Mathf.Min(columnPositions.Length - scorePointCount - powerUpCount, indexes.Count);
+
+            // Randomly remove those that will not be selected:
+            for (int i = 0; i < indexesToRemove; i++)
+            {
+                indexes.RemoveAt(Random.Range(0, indexes.Count));
+            }
+
+            // Assign positions to the unpooled score points:
+            for (int i = 0; i < scorePointCount; i++)
+            {
+                scorePoints[i]                    = MapController.Singleton.GetScorePoint();
+                scorePoints[i].transform.position = (Vector2)transform.position + columnPositions[indexes[i]];
+            }
+
+            // Assign positions to the unpooled power ups:
+            for (int i = scorePointCount; i < powerUpCount; i++)
+            {
+                PowerUp powerUp = powerUpPool.GetPool(Random.value)?.GetItem() ?? null;
+
+                if (powerUp != null)
+                {
+                    powerUp.transform.position = (Vector2)transform.position + columnPositions[indexes[i]];
+                }
+            }
+        }
+
+        #endregion
+
+        #region Helpers
 
         public void SetColor(Color color)
         {
             foreach (var wall in wallPool.AllItems)
             {
                 wall.SetColor(color);
-            }
-
-            foreach (var scorePoint in scorePointPool.AllItems)
-            {
-                scorePoint.SetColor(color);
             }
 
             foreach (var pool in powerUpPool.GetPools())
@@ -179,6 +277,13 @@ namespace FlyBit.Map
                 }
             }
         }
+
+        public bool CanDespawn(float despawnThresholdX)
+        {
+            return transform.position.x + wallPool.ActiveItemCount * wallColumnWidth < despawnThresholdX;
+        }
+
+        #endregion
 
     }
 

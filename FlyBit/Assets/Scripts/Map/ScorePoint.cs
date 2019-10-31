@@ -1,4 +1,5 @@
 ﻿using FlyBit.Controllers;
+using FlyBit.Extensions;
 using System;
 using UnityEngine;
 
@@ -19,15 +20,20 @@ namespace FlyBit.Map
 
         #region Private variables
 
-        private Action<ScorePoint> poolCall;
+        private GameObjectPool<ScorePoint> pool;
 
         private bool canBeTaken;
 
         #endregion
 
-        public void Initialize(Action<ScorePoint> poolCall)
+        public void Initialize(GameObjectPool<ScorePoint> pool)
         {
-            this.poolCall = poolCall;
+            this.pool = pool;
+        }
+
+        public void Despawn()
+        {
+            pool.PoolItem(this);
         }
 
         private void OnEnable()
@@ -43,7 +49,7 @@ namespace FlyBit.Map
 
                 ScoreController.Singleton.IncreaseScore();
 
-                poolCall.Invoke(this);
+                pool.PoolItem(this);
             }
         }
 

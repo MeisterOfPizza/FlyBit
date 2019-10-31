@@ -13,6 +13,7 @@ namespace FlyBit.Controllers
         [Header("References")]
         [SerializeField] private GameObject menuScreen;
         [SerializeField] private GameObject gameScreen;
+        [SerializeField] private GameObject deathScreen;
 
         #endregion
 
@@ -24,7 +25,8 @@ namespace FlyBit.Controllers
 
         private void Start()
         {
-            Screen.fullScreen = false;
+            // TODO: Set fullscreen for demos.
+            Screen.fullScreen = true;
         }
 
         public void StartMatch()
@@ -33,7 +35,9 @@ namespace FlyBit.Controllers
 
             menuScreen.SetActive(false);
             gameScreen.SetActive(true);
+            deathScreen.SetActive(false);
 
+            EffectsController.Singleton.ResetAllEffects();
             PlayerController.Singleton.ResetPlayer();
             MapController.Singleton.Begin();
             ScoreController.Singleton.Begin();
@@ -42,6 +46,9 @@ namespace FlyBit.Controllers
         public void EndMatch()
         {
             IsMatchRunning = false;
+
+            gameScreen.SetActive(false);
+            deathScreen.SetActive(true);
 
             MapController.Singleton.End();
             ScoreController.Singleton.End();

@@ -23,39 +23,6 @@ namespace FlyBit.Map
 
         #endregion
 
-        #region Public properties
-
-        public bool IsMoving
-        {
-            get
-            {
-                return isMoving;
-            }
-        }
-
-        #endregion
-
-        #region Private variables
-
-        private Action<WallColumn> onCloseCallback;
-
-        private bool isMoving;
-
-        #endregion
-
-        public void Initialize(Action<WallColumn> onCloseCallback)
-        {
-            //this.onCloseCallback = onCloseCallback;
-        }
-
-        public void Spawn(Vector2 position, float spacing)
-        {
-            transform.position = position;
-
-            topWall.transform.localPosition    = new Vector2(0f, spacing / 2f);
-            bottomWall.transform.localPosition = new Vector2(0f, -spacing / 2f);
-        }
-
         public void Spawn(Vector2 columnPosition, Vector2 topWallPosition, Vector2 bottomWallPosition)
         {
             transform.localPosition = columnPosition;
@@ -70,18 +37,22 @@ namespace FlyBit.Map
             bottomWall.color = color;
         }
 
-        public void OpenCloseSection(bool open)
+        public void OpenCloseColumn(bool open)
         {
-            isMoving = true;
-
             StartCoroutine("MoveWalls", open);
         }
 
         private IEnumerator MoveWalls(bool open)
         {
             float   time         = moveWallTime;
-            Vector2 topTarget    = new Vector2(transform.position.x, open ? PlayerController.Singleton.transform.position.y + screenHeight : transform.position.y);
-            Vector2 bottomTarget = new Vector2(transform.position.x, open ? PlayerController.Singleton.transform.position.y - screenHeight : transform.position.y);
+            Vector2 topTarget    = new Vector2(transform.position.x, open ? PlayerController.Singleton.transform.position.y + screenHeight : topWall.transform.position.y);
+            Vector2 bottomTarget = new Vector2(transform.position.x, open ? PlayerController.Singleton.transform.position.y - screenHeight : bottomWall.transform.position.y);
+
+            if (open)
+            {
+                topWall.transform.localPosition    = new Vector3(topWall.transform.localPosition.x, 0f);
+                bottomWall.transform.localPosition = new Vector3(bottomWall.transform.localPosition.x, 0f);
+            }
 
             while (time > 0f)
             {
@@ -97,13 +68,6 @@ namespace FlyBit.Map
             {
                 yield return new WaitForEndOfFrame();
             }
-
-            if (!open)
-            {
-                //onCloseCallback.Invoke(this);
-            }
-
-            isMoving = false;
         }
 
     }

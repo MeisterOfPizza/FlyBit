@@ -43,13 +43,11 @@ namespace FlyBit.Controllers
         [SerializeField] private float maxFuel                      = 5f;
 
         [Space]
+        [SerializeField] private float spawnInvisibilityTime  = 1.0f;
         [SerializeField] private float reviveInvisibilityTime = 1.5f;
 
         [Space]
         [SerializeField] private Gradient fuelGradient;
-
-        [Space]
-        [SerializeField] private LayerMask wallSectionLayerMask;
 
         #endregion
 
@@ -66,6 +64,7 @@ namespace FlyBit.Controllers
 
         #region Private variables
 
+        private bool isSpawning;
         private bool isReviving;
 
         private bool  isThrusting;
@@ -80,7 +79,7 @@ namespace FlyBit.Controllers
 
         private void Update()
         {
-            if (GameController.Singleton.IsMatchRunning && !IsDead && !isReviving)
+            if (GameController.Singleton.IsMatchRunning && !IsDead && !isSpawning && !isReviving)
             {
                 CheckIfShouldThrust();
 
@@ -118,17 +117,52 @@ namespace FlyBit.Controllers
 
             livesLeft = MAX_LIVES;
 
+            transform.position = Vector3.zero;
+            transform.right    = Vector3.right;
+
+            crashParticleSystem.Stop();
+            crashParticleSystem.Clear();
+
             playerModel.gameObject.SetActive(true);
 
             for (int i = 0; i < MAX_LIVES; i++)
             {
                 heartIcons[i].gameObject.SetActive(true);
             }
+
+            isSpawning = true;
+
+            ScoreController.Singleton.PauseTimeAlive(true);
+
+            StartCoroutine("SpawnEffect");
+        }
+
+        private IEnumerator SpawnEffect()
+        {
+            animator.Play("Revive_Blink");
+
+            float timeLeft = spawnInvisibilityTime;
+
+            while (timeLeft > 0f)
+            {
+                fuelBar.material.SetFloat("_FillAmount", 1f - timeLeft / spawnInvisibilityTime);
+                fuelBar.color = fuelGradient.Evaluate(1f - timeLeft / spawnInvisibilityTime);
+
+                timeLeft -= Time.deltaTime;
+
+                yield return new WaitForEndOfFrame();
+            }
+
+            animator.Play("Rest");
+
+            ScoreController.Singleton.PauseTimeAlive(false);
+
+            isSpawning = false;
         }
 
         private void Crash()
         {
-            if (!isReviving && !IsDead)
+            if (!isSpawning && !isReviving && !IsDead)
             {
                 if (livesLeft > 0)
                 {
@@ -173,8 +207,9 @@ namespace FlyBit.Controllers
             playerModel.SetActive(true);
             animator.Play("Revive_Blink");
 
-            transform.position = new Vector3(transform.position.x - 2.5f, GetWallSection(new Vector2(transform.position.x - 2.5f, transform.position.y))?.transform.position.y ?? 0f);
+            transform.position = Vector2.zero;
             transform.right    = Vector3.right;
+            MapController.Singleton.RebuildMap();
 
             float timeLeft = reviveInvisibilityTime;
 
@@ -200,6 +235,8 @@ namespace FlyBit.Controllers
             playerModel.gameObject.SetActive(false);
 
             IsDead = true;
+
+            GameController.Singleton.EndMatch();
         }
 
         #endregion
@@ -262,11 +299,6 @@ namespace FlyBit.Controllers
         #endregion
 
         #region Collisions
-
-        public WallSection GetWallSection(Vector2 position)
-        {
-            return Physics2D.OverlapBox(position, new Vector2(0.1f, 0.1f), 0f, wallSectionLayerMask)?.GetComponent<WallSection>() ?? null;
-        }
 
         private void OnCollisionEnter2D(Collision2D collision)
         {

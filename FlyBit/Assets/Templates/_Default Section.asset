@@ -14,16 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   wallColumnPrefab: {fileID: 8758200121234272091, guid: 42b74d6bac3b4d845aa913813794c071,
     type: 3}
-  scorePointPrefab: {fileID: 1876917450522312521, guid: 58776fba1001add468df36504ff938b6,
-    type: 3}
   minNormalizedDifficulty: 0
   spawnChance: 1
   minColumnCount: 5
   maxColumnCount: 10
-  maxScorePointFrequency: 0.2
+  maxScorePointFrequency: 0
   maxPowerUpCount: 2
-  sectionPowerUps:
-  - spawnChance: 0.05
-    prefab: {fileID: 6819765001158733578, guid: 7b6a3261f9366414f88952662c378c49,
-      type: 3}
+  minWallColumnSpaceHeight: 2.5
+  maxWallColumnSpaceHeight: 5
+  wallFormationScale: 1
+  sectionPowerUps: []
   possibleFormations: 1
