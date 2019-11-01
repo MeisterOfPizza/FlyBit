@@ -19,9 +19,9 @@ MonoBehaviour:
   minColumnCount: 40
   maxColumnCount: 40
   maxScorePointFrequency: 0
-  maxPowerUpCount: 2
+  maxPowerUpCount: 0
   minWallColumnSpaceHeight: 2.5
-  maxWallColumnSpaceHeight: 5
+  maxWallColumnSpaceHeight: 2.5
   wallFormationScale: 3
   sectionPowerUps: []
   possibleFormations: 4

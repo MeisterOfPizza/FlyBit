@@ -21,7 +21,7 @@ namespace FlyBit.Templates
         [SerializeField, Range(5, 100)] private int   minColumnCount          = 5;
         [SerializeField, Range(5, 100)] private int   maxColumnCount          = 10;
         [SerializeField, Range(0f, 1f)] private float maxScorePointFrequency  = 0.1f;
-        [SerializeField, Range(1, 100)] private int   maxPowerUpCount         = 2;
+        [SerializeField, Range(0, 100)] private int   maxPowerUpCount         = 2;
 
         [Space]
         [SerializeField] private float minWallColumnSpaceHeight = 2.5f;

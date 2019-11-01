@@ -97,16 +97,7 @@ namespace FlyBit.Controllers
 
         public void Begin()
         {
-            ResetAll();
-            BuildMap();
-
-            foreach (var pool in wallSectionPools)
-            {
-                foreach (var wallSection in pool.ActiveItemsNonAloc)
-                {
-                    wallSection.OpenCloseSection(false);
-                }
-            }
+            RebuildMap();
 
             StartCoroutine("SpawnCycle");
         }
@@ -160,6 +151,14 @@ namespace FlyBit.Controllers
         {
             ResetAll();
             BuildMap();
+
+            foreach (var pool in wallSectionPools)
+            {
+                foreach (var wallSection in pool.ActiveItemsNonAloc)
+                {
+                    wallSection.OpenCloseSection(false);
+                }
+            }
         }
 
         private void ResetAll()
@@ -208,11 +207,11 @@ namespace FlyBit.Controllers
             int i = wallSectionTemplatePairs.Count;
             foreach (var pair in wallSectionTemplatePairs)
             {
-                if (pair.Key.SpawnChance >= value && pair.Key.MinNormalizedDifficulty >= DifficultyController.Singleton.NormalizedDifficulty)
+                if (pair.Key.SpawnChance >= value)
                 {
-                    var valuablePairs = wallSectionTemplatePairs.Take(i).Where(p => p.Value.HasAvailableItems);
+                    var valuablePairs = wallSectionTemplatePairs.Take(i).Where(p => p.Value.HasAvailableItems && p.Key.MinNormalizedDifficulty <= DifficultyController.Singleton.NormalizedDifficulty);
 
-                    return valuablePairs.Count() > 0 ? valuablePairs.ElementAt(Random.Range(2, valuablePairs.Count())).Value.GetItem() : wallSectionTemplatePairs[defaultSectionTemplate].GetItem();
+                    return valuablePairs.Count() > 2 ? valuablePairs.ElementAt(Random.Range(2, valuablePairs.Count())).Value.GetItem() : wallSectionTemplatePairs[defaultSectionTemplate].GetItem();
                 }
 
                 i--;

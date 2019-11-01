@@ -31,11 +31,11 @@ namespace FlyBit.Extensions
 
         public GameObjectPool<T> GetPool(float value)
         {
-            for (int i = probabilityPoolPairs.Length - 1; i >= 0; i--)
+            for (int i = 0; i < probabilityPoolPairs.Length; i++)
             {
-                if (probabilityPoolPairs[i].Item2 <= value)
+                if (probabilityPoolPairs[i].Item2 >= value)
                 {
-                    return probabilityPoolPairs[UnityEngine.Random.Range(0, i)].Item1;
+                    return probabilityPoolPairs[UnityEngine.Random.Range(i, probabilityPoolPairs.Length)].Item1;
                 }
             }
 

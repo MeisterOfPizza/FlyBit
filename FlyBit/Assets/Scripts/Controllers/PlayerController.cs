@@ -1,4 +1,4 @@
-﻿using FlyBit.Map;
+﻿using FlyBit.Extensions;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
@@ -195,6 +195,7 @@ namespace FlyBit.Controllers
 
             playerModel.SetActive(false);
 
+            DifficultyController.Singleton.Pause(true);
             ScoreController.Singleton.PauseTimeAlive(true);
 
             StartCoroutine("ReviveEffect");
@@ -225,6 +226,7 @@ namespace FlyBit.Controllers
 
             animator.Play("Rest");
 
+            DifficultyController.Singleton.Pause(false);
             ScoreController.Singleton.PauseTimeAlive(false);
 
             isReviving = false;
@@ -239,6 +241,16 @@ namespace FlyBit.Controllers
             GameController.Singleton.EndMatch();
         }
 
+        public void GiveLife()
+        {
+            if (livesLeft < MAX_LIVES)
+            {
+                livesLeft++;
+
+                heartIcons[livesLeft - 1].gameObject.SetActive(true);
+            }
+        }
+
         #endregion
 
         #region Thrusting
@@ -250,7 +262,7 @@ namespace FlyBit.Controllers
                 bool shouldThrust = false;
 
 #if UNITY_STANDALONE
-                shouldThrust = Input.GetMouseButton(0);
+                shouldThrust = !MathE.IsPointerOverUIObject(Input.mousePosition) && (Input.GetMouseButton(0) || Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow));
 #elif UNITY_IOS || UNITY_ANDROID
 
 #endif

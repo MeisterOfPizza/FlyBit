@@ -15,7 +15,7 @@ MonoBehaviour:
   wallColumnPrefab: {fileID: 8758200121234272091, guid: 42b74d6bac3b4d845aa913813794c071,
     type: 3}
   minNormalizedDifficulty: 0
-  spawnChance: 0.75
+  spawnChance: 0.2
   minColumnCount: 25
   maxColumnCount: 50
   maxScorePointFrequency: 0.15
@@ -24,7 +24,7 @@ MonoBehaviour:
   maxWallColumnSpaceHeight: 5
   wallFormationScale: 3
   sectionPowerUps:
-  - spawnChance: 0.05
+  - spawnChance: 0.1
     prefab: {fileID: 6819765001158733578, guid: 7b6a3261f9366414f88952662c378c49,
       type: 3}
   possibleFormations: 4

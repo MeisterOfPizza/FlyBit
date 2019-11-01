@@ -3,12 +3,12 @@
 namespace FlyBit.PowerUps
 {
 
-    sealed class InvertPowerUp : PowerUp
+    sealed class ExtraLifePowerUp : PowerUp
     {
 
         protected override void Activate()
         {
-            EffectsController.Singleton.ToggleInvertEffect();
+            PlayerController.Singleton.GiveLife();
         }
 
     }

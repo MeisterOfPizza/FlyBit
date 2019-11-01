@@ -230,8 +230,8 @@ namespace FlyBit.Map
             scorePoints = new ScorePoint[scorePointCount];
 
             // Make a list of all the available columnPosition indexes:
-            List<int> indexes = Enumerable.Range(0, columnPositions.Length).ToList();
-            int indexesToRemove = Mathf.Min(columnPositions.Length - scorePointCount - powerUpCount, indexes.Count);
+            List<int> indexes         = Enumerable.Range(0, columnPositions.Length).ToList();
+            int       indexesToRemove = Mathf.Min(columnPositions.Length - scorePointCount - powerUpCount, indexes.Count);
 
             // Randomly remove those that will not be selected:
             for (int i = 0; i < indexesToRemove; i++)
@@ -247,7 +247,7 @@ namespace FlyBit.Map
             }
 
             // Assign positions to the unpooled power ups:
-            for (int i = scorePointCount; i < powerUpCount; i++)
+            for (int i = scorePointCount; i < scorePointCount + powerUpCount; i++)
             {
                 PowerUp powerUp = powerUpPool.GetPool(Random.value)?.GetItem() ?? null;
 

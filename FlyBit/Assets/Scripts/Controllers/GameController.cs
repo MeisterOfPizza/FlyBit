@@ -41,6 +41,7 @@ namespace FlyBit.Controllers
             PlayerController.Singleton.ResetPlayer();
             MapController.Singleton.Begin();
             ScoreController.Singleton.Begin();
+            DifficultyController.Singleton.Begin();
         }
 
         public void EndMatch()
@@ -52,6 +53,7 @@ namespace FlyBit.Controllers
 
             MapController.Singleton.End();
             ScoreController.Singleton.End();
+            DifficultyController.Singleton.End();
         }
 
     }

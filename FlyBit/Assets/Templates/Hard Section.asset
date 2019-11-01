@@ -10,21 +10,24 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 355bc0a18cffb1e47bab6362990b45db, type: 3}
-  m_Name: Climb and Drop Section
+  m_Name: Hard Section
   m_EditorClassIdentifier: 
   wallColumnPrefab: {fileID: 8758200121234272091, guid: 42b74d6bac3b4d845aa913813794c071,
     type: 3}
-  minNormalizedDifficulty: 0.3
-  spawnChance: 0.75
-  minColumnCount: 25
-  maxColumnCount: 50
+  minNormalizedDifficulty: 1
+  spawnChance: 0.2
+  minColumnCount: 30
+  maxColumnCount: 100
   maxScorePointFrequency: 0.4
-  maxPowerUpCount: 2
+  maxPowerUpCount: 5
   minWallColumnSpaceHeight: 2.5
   maxWallColumnSpaceHeight: 5
-  wallFormationScale: 0.4
+  wallFormationScale: 3
   sectionPowerUps:
-  - spawnChance: 0.025
+  - spawnChance: 0.07
     prefab: {fileID: 6819765001158733578, guid: 7b6a3261f9366414f88952662c378c49,
       type: 3}
-  possibleFormations: 24
+  - spawnChance: 0.03
+    prefab: {fileID: 6819765001158733578, guid: fd136ab797f8f694ab73dc6f34b3c500,
+      type: 3}
+  possibleFormations: 90

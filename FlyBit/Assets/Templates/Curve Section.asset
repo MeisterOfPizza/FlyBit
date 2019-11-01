@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   wallColumnPrefab: {fileID: 8758200121234272091, guid: 42b74d6bac3b4d845aa913813794c071,
     type: 3}
-  minNormalizedDifficulty: 0
+  minNormalizedDifficulty: 0.4
   spawnChance: 0.75
   minColumnCount: 40
   maxColumnCount: 65
@@ -24,7 +24,10 @@ MonoBehaviour:
   maxWallColumnSpaceHeight: 5
   wallFormationScale: 0.4
   sectionPowerUps:
-  - spawnChance: 0.05
+  - spawnChance: 0.025
     prefab: {fileID: 6819765001158733578, guid: 7b6a3261f9366414f88952662c378c49,
+      type: 3}
+  - spawnChance: 0.025
+    prefab: {fileID: 6819765001158733578, guid: fd136ab797f8f694ab73dc6f34b3c500,
       type: 3}
   possibleFormations: 64

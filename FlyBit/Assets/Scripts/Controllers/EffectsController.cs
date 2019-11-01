@@ -1,4 +1,5 @@
-﻿using TMPro;
+﻿using FlyBit.UI;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,14 +14,11 @@ namespace FlyBit.Controllers
         #region Editor
 
         [Header("Invert Colors")]
-        [SerializeField] private TMP_Text       scoreText;
-        [SerializeField] private TMP_Text       timeAliveText;
-        [SerializeField] private TMP_Text       distanceTraveledText;
         [SerializeField] private Camera         mainCamera;
         [SerializeField] private SpriteRenderer playerSpriteRenderer;
-        [SerializeField] private Image[]        heartImages;
-        [SerializeField] private TMP_Text       retryText;
-        [SerializeField] private TMP_Text       gameOverText;
+        [SerializeField] private UIColorInvert  gameScreen;
+        [SerializeField] private UIColorInvert  deathScreen;
+        [SerializeField] private UIColorInvert  resetGameButton;
 
         #endregion
 
@@ -40,15 +38,11 @@ namespace FlyBit.Controllers
         {
             invertEffectIsOn = !invertEffectIsOn;
 
-            scoreText.color            = invertEffectIsOn ? Color.black : Color.white;
-            timeAliveText.color        = invertEffectIsOn ? Color.black : Color.white;
-            distanceTraveledText.color = invertEffectIsOn ? Color.black : Color.white;
             mainCamera.backgroundColor = invertEffectIsOn ? Color.black : Color.white;
             playerSpriteRenderer.color = invertEffectIsOn ? Color.white : Color.black;
-            retryText.color            = invertEffectIsOn ? Color.white : Color.black;
-            gameOverText.color         = invertEffectIsOn ? Color.white : Color.black;
-
-            foreach (var heartImage in heartImages) { heartImage.color = invertEffectIsOn ? Color.black : Color.white; }
+            gameScreen.SetColor(invertEffectIsOn);
+            deathScreen.SetColor(invertEffectIsOn);
+            resetGameButton.SetColor(invertEffectIsOn);
 
             MapController.Singleton.SetMapColor(invertEffectIsOn ? Color.white : Color.black);
             PlayerController.Singleton.Invert = invertEffectIsOn;

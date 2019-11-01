@@ -49,7 +49,7 @@ namespace FlyBit.Controllers
             timeAlive        = 0f;
             distanceTraveled = 0f;
 
-            scoreText.text            = "SCORE 0";
+            scoreText.text            = "SCORE: 0";
             timeAliveText.text        = "TIME ALIVE: 0 SEC";
             distanceTraveledText.text = "0 M";
 

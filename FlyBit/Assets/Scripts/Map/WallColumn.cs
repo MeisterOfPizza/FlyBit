@@ -48,10 +48,10 @@ namespace FlyBit.Map
             Vector2 topTarget    = new Vector2(transform.position.x, open ? PlayerController.Singleton.transform.position.y + screenHeight : topWall.transform.position.y);
             Vector2 bottomTarget = new Vector2(transform.position.x, open ? PlayerController.Singleton.transform.position.y - screenHeight : bottomWall.transform.position.y);
 
-            if (open)
+            if (!open)
             {
-                topWall.transform.localPosition    = new Vector3(topWall.transform.localPosition.x, 0f);
-                bottomWall.transform.localPosition = new Vector3(bottomWall.transform.localPosition.x, 0f);
+                topWall.transform.localPosition    = Vector2.zero;
+                bottomWall.transform.localPosition = Vector2.zero;
             }
 
             while (time > 0f)
