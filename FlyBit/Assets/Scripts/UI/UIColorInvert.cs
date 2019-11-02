@@ -1,5 +1,6 @@
 ﻿using FlyBit.Extensions;
 using System;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -27,6 +28,12 @@ namespace FlyBit.UI
             [SerializeField] private Color   defaultColor = Color.white;
             [SerializeField] private Graphic targetGraphic;
 
+            public ColorOption(Color color, Graphic graphic)
+            {
+                this.defaultColor  = color;
+                this.targetGraphic = graphic;
+            }
+
             public void SetColor(bool invert)
             {
                 targetGraphic.color = invert ? defaultColor.Invert() : defaultColor;
@@ -35,6 +42,18 @@ namespace FlyBit.UI
         }
 
         #endregion
+
+        public void AddColorOptions(Color defaultColor, params Graphic[] graphics)
+        {
+            var options = colorOptions.ToList();
+
+            foreach (var graphic in graphics)
+            {
+                options.Add(new ColorOption(defaultColor, graphic));
+            }
+
+            colorOptions = options.ToArray();
+        }
 
         public void SetColor(bool invert)
         {

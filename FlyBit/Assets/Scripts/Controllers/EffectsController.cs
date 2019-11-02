@@ -1,7 +1,5 @@
 ﻿using FlyBit.UI;
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 #pragma warning disable 0649
 
@@ -19,6 +17,7 @@ namespace FlyBit.Controllers
         [SerializeField] private UIColorInvert  gameScreen;
         [SerializeField] private UIColorInvert  deathScreen;
         [SerializeField] private UIColorInvert  resetGameButton;
+        [SerializeField] private UIColorInvert  uiGainedScoreColorInvert;
 
         #endregion
 
@@ -43,6 +42,7 @@ namespace FlyBit.Controllers
             gameScreen.SetColor(invertEffectIsOn);
             deathScreen.SetColor(invertEffectIsOn);
             resetGameButton.SetColor(invertEffectIsOn);
+            uiGainedScoreColorInvert.SetColor(invertEffectIsOn);
 
             MapController.Singleton.SetMapColor(invertEffectIsOn ? Color.white : Color.black);
             PlayerController.Singleton.Invert = invertEffectIsOn;

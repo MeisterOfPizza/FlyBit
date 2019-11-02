@@ -16,10 +16,11 @@ namespace FlyBit.PowerUps
 
         #endregion
 
-        #region Private variables
+        #region Protected and private variables
+
+        protected bool isActivated;
 
         private Action<PowerUp> onActivatePoolCall;
-        private bool            isActivated;
 
         #endregion
 
@@ -31,6 +32,7 @@ namespace FlyBit.PowerUps
         private void OnEnable()
         {
             isActivated = false;
+            spriteRenderer.enabled = true;
         }
 
         protected abstract void Activate();

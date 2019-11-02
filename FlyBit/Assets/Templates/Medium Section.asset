@@ -10,21 +10,27 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 355bc0a18cffb1e47bab6362990b45db, type: 3}
-  m_Name: Circle Section
+  m_Name: Medium Section
   m_EditorClassIdentifier: 
   wallColumnPrefab: {fileID: 8758200121234272091, guid: 42b74d6bac3b4d845aa913813794c071,
     type: 3}
-  minNormalizedDifficulty: 0
-  spawnChance: 0.2
+  minNormalizedDifficulty: 0.7
+  spawnChance: 0.4
   minColumnCount: 25
-  maxColumnCount: 50
-  maxScorePointFrequency: 0.15
-  maxPowerUpCount: 1
-  minWallColumnSpaceHeight: 2.5
+  maxColumnCount: 70
+  maxScorePointFrequency: 0.4
+  maxPowerUpCount: 4
+  minWallColumnSpaceHeight: 3
   maxWallColumnSpaceHeight: 5
-  wallFormationScale: 3
+  wallFormationScale: 0.65
   sectionPowerUps:
-  - spawnChance: 0.15
+  - spawnChance: 0.06
     prefab: {fileID: 6819765001158733578, guid: 7b6a3261f9366414f88952662c378c49,
       type: 3}
-  possibleFormations: 4
+  - spawnChance: 0.05
+    prefab: {fileID: 6819765001158733578, guid: fd136ab797f8f694ab73dc6f34b3c500,
+      type: 3}
+  - spawnChance: 0.15
+    prefab: {fileID: 6819765001158733578, guid: 8df2889580c2c9b4ca9d159dcd66dd48,
+      type: 3}
+  possibleFormations: 26

@@ -1,5 +1,7 @@
 ﻿using FlyBit.Extensions;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -64,14 +66,24 @@ namespace FlyBit.Controllers
 
         #region Private variables
 
-        private bool isSpawning;
-        private bool isReviving;
+        private Dictionary<PlayerEffect, float> playerEffects = new Dictionary<PlayerEffect, float>();
 
+        private bool  isSpawning;
+        private bool  isReviving;
         private bool  isThrusting;
         private float fuel;
         private float moveSpeed;
         private float turnSpeed;
         private int   livesLeft;
+
+        #endregion
+
+        #region Enums
+
+        public enum PlayerEffect
+        {
+            InfiniteFuel
+        }
 
         #endregion
 
@@ -81,6 +93,8 @@ namespace FlyBit.Controllers
         {
             if (GameController.Singleton.IsMatchRunning && !IsDead && !isSpawning && !isReviving)
             {
+                UpdatePlayerEffects();
+
                 CheckIfShouldThrust();
 
                 if (!isThrusting)
@@ -105,6 +119,8 @@ namespace FlyBit.Controllers
 
         public void ResetPlayer()
         {
+            ClearPlayerEffects();
+
             fuel      = maxFuel;
             moveSpeed = fallMoveSpeed;
             turnSpeed = fallTurnSpeed;
@@ -112,6 +128,7 @@ namespace FlyBit.Controllers
             fuelBar.material.SetFloat("_FillAmount", fuel / maxFuel);
             fuelBar.color = fuelGradient.Evaluate(fuel / maxFuel);
 
+            isSpawning = true;
             isReviving = false;
             IsDead     = false;
 
@@ -130,8 +147,7 @@ namespace FlyBit.Controllers
                 heartIcons[i].gameObject.SetActive(true);
             }
 
-            isSpawning = true;
-
+            DifficultyController.Singleton.Pause(true);
             ScoreController.Singleton.PauseTimeAlive(true);
 
             StartCoroutine("SpawnEffect");
@@ -155,6 +171,7 @@ namespace FlyBit.Controllers
 
             animator.Play("Rest");
 
+            DifficultyController.Singleton.Pause(false);
             ScoreController.Singleton.PauseTimeAlive(false);
 
             isSpawning = false;
@@ -188,6 +205,8 @@ namespace FlyBit.Controllers
 
         private void Revive()
         {
+            ClearPlayerEffects();
+
             moveSpeed  = fallMoveSpeed;
             turnSpeed  = fallTurnSpeed;
             fuel       = maxFuel;
@@ -267,7 +286,7 @@ namespace FlyBit.Controllers
 
 #endif
 
-                if (shouldThrust && !isThrusting)
+                if (shouldThrust && !isThrusting && !playerEffects.ContainsKey(PlayerEffect.InfiniteFuel))
                 {
                     fuel = Mathf.Clamp(fuel - initialThrustFuelConsumption, 0f, maxFuel);
                 }
@@ -282,7 +301,10 @@ namespace FlyBit.Controllers
 
         private void Thurst()
         {
-            fuel = Mathf.Clamp(fuel - Time.deltaTime, 0f, maxFuel);
+            if (!playerEffects.ContainsKey(PlayerEffect.InfiniteFuel))
+            {
+                fuel = Mathf.Clamp(fuel - Time.deltaTime, 0f, maxFuel);
+            }
 
             moveSpeed = Mathf.Lerp(moveSpeed, thrustMoveSpeed, moveLerpSpeed * Time.deltaTime);
             turnSpeed = Mathf.Lerp(turnSpeed, thrustTurnSpeed, turnLerpSpeed * Time.deltaTime);
@@ -315,6 +337,45 @@ namespace FlyBit.Controllers
         private void OnCollisionEnter2D(Collision2D collision)
         {
             Crash();
+        }
+
+        #endregion
+
+        #region Player effects
+
+        public void AddPlayerEffect(PlayerEffect playerEffect, float duration)
+        {
+            playerEffects[playerEffect] = duration;
+        }
+
+        public void RemovePlayerEffect(PlayerEffect playerEffect)
+        {
+            playerEffects.Remove(playerEffect);
+        }
+
+        private void UpdatePlayerEffects()
+        {
+            foreach (var effect in playerEffects.ToList())
+            {
+                if (effect.Value <= 0)
+                {
+                    RemovePlayerEffect(effect.Key);
+                }
+                else
+                {
+                    playerEffects[effect.Key] -= Time.deltaTime;
+
+                    if (effect.Key == PlayerEffect.InfiniteFuel)
+                    {
+                        ScoreController.Singleton.AddStatRecordValue(ScoreController.StatRecordType.InfiniteFuelDuration, Time.deltaTime);
+                    }
+                }
+            }
+        }
+
+        private void ClearPlayerEffects()
+        {
+            playerEffects.Clear();
         }
 
         #endregion

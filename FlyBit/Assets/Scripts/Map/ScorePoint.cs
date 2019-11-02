@@ -47,7 +47,9 @@ namespace FlyBit.Map
             {
                 canBeTaken = false;
 
-                ScoreController.Singleton.IncreaseScore();
+                ScoreController.Singleton.IncreaseScore(10);
+                ScoreController.Singleton.AddStatRecordValue(ScoreController.StatRecordType.ScorePointsTaken, 1);
+                ScoreController.Singleton.AddStatRecordValue(ScoreController.StatRecordType.ScorePointsScoreGained, 10);
 
                 pool.PoolItem(this);
             }

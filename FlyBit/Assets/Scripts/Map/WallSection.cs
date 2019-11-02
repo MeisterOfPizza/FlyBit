@@ -46,11 +46,15 @@ namespace FlyBit.Map
 
         #endregion
 
-        #region Lifecycle
+        #region Life cycle
 
         public void Initialize(SectionTemplate sectionTemplate)
         {
             this.template = sectionTemplate;
+
+#if UNITY_EDITOR
+            gameObject.name = template.name;
+#endif
 
             wallPool    = new GameObjectPool<WallColumn>(transform, template.WallColumnPrefab, template.MaxColumnCount);
             powerUpPool = new ProbabilityPool<PowerUp>(transform, template.GetPrefabProbabilityPairs(), template.MaxPowerUpCount);
@@ -89,6 +93,17 @@ namespace FlyBit.Map
             foreach (var wallColumn in wallPool.ActiveItemsNonAloc)
             {
                 wallColumn.OpenCloseColumn(open);
+            }
+
+            // The player has died: hide all interactables.
+            if (open)
+            {
+                powerUpPool.PoolAll();
+
+                foreach (var scorePoint in scorePoints)
+                {
+                    scorePoint.Despawn();
+                }
             }
         }
 

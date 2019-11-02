@@ -38,10 +38,10 @@ namespace FlyBit.Controllers
             deathScreen.SetActive(false);
 
             EffectsController.Singleton.ResetAllEffects();
+            DifficultyController.Singleton.Begin();
+            ScoreController.Singleton.Begin();
             PlayerController.Singleton.ResetPlayer();
             MapController.Singleton.Begin();
-            ScoreController.Singleton.Begin();
-            DifficultyController.Singleton.Begin();
         }
 
         public void EndMatch()
@@ -51,9 +51,9 @@ namespace FlyBit.Controllers
             gameScreen.SetActive(false);
             deathScreen.SetActive(true);
 
-            MapController.Singleton.End();
-            ScoreController.Singleton.End();
             DifficultyController.Singleton.End();
+            ScoreController.Singleton.End();
+            MapController.Singleton.End();
         }
 
     }

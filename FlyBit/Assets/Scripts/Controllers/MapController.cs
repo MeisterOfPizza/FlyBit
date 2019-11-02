@@ -66,7 +66,7 @@ namespace FlyBit.Controllers
 
         #endregion
 
-        #region Lifecycle
+        #region Life cycle
 
         public override void OnAwake()
         {
@@ -77,7 +77,7 @@ namespace FlyBit.Controllers
 
             for (int i = 0; i < templates.Length; i++)
             {
-                var pool = new GameObjectPool<WallSection>(mapContainer, wallSectionPrefab, templates[i] == defaultSectionTemplate ? 20 : 3);
+                var pool = new GameObjectPool<WallSection>(mapContainer, wallSectionPrefab, templates[i] == startSectionTemplate ? 2 : 4);
                 wallSectionTemplatePairs.Add(templates[i], pool);
                 wallSectionPools[i] = pool;
 
