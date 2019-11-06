@@ -143,30 +143,30 @@ namespace FlyBit.Map
                     break;
                 case SectionTemplate.SectionWallFormation.Wave:
                     {
-                        float minSpacing = Random.Range(template.MinWallColumnSpaceHeight, template.MaxWallColumnSpaceHeight) / 2f;
-                        float direction  = 1 - Random.Range(1, 3) / 2 * 2; // -1 or 1
+                        float height    = Random.Range(template.MinWallColumnSpaceHeight, template.MaxWallColumnSpaceHeight) / 2f;
+                        float direction = 1 - Random.Range(1, 3) / 2 * 2; // -1 or 1
 
                         for (int i = 0; i < columnCount; i++)
                         {
                             float spacing = Mathf.Sin(i / (float)(columnCount - 1) * direction * Mathf.PI) * template.WallFormationScale;
 
                             columnPositions[i]       = new Vector2(wallColumnWidth * i, spacing);
-                            wallPositions[i * 2]     = new Vector2(0f, minSpacing);
-                            wallPositions[i * 2 + 1] = new Vector2(0f, -minSpacing);
+                            wallPositions[i * 2]     = new Vector2(0f, height);
+                            wallPositions[i * 2 + 1] = new Vector2(0f, -height);
                         }
                     }
                     break;
                 case SectionTemplate.SectionWallFormation.Circle:
                     {
-                        float minSpacing = Random.Range(template.MinWallColumnSpaceHeight, template.MaxWallColumnSpaceHeight) / 2f;
+                        float height = Random.Range(template.MinWallColumnSpaceHeight, template.MaxWallColumnSpaceHeight) / 2f;
 
                         for (int i = 0; i < columnCount; i++)
                         {
                             float spacing = Mathf.Sin(i / (float)(columnCount - 1) * Mathf.PI) * template.WallFormationScale;
 
                             columnPositions[i]       = new Vector2(wallColumnWidth * i, 0f);
-                            wallPositions[i * 2]     = new Vector2(0f, spacing + minSpacing);
-                            wallPositions[i * 2 + 1] = new Vector2(0f, -spacing - minSpacing);
+                            wallPositions[i * 2]     = new Vector2(0f, spacing + height);
+                            wallPositions[i * 2 + 1] = new Vector2(0f, -spacing - height);
                         }
                     }
                     break;
@@ -218,6 +218,20 @@ namespace FlyBit.Map
                             columnPositions[i]       = new Vector2(wallColumnWidth * i, curve.GetPoint(i / (float)(columnCount - 1)).y);
                             wallPositions[i * 2]     = new Vector2(0f, spacing);
                             wallPositions[i * 2 + 1] = new Vector2(0f, -spacing);
+                        }
+                    }
+                    break;
+                case SectionTemplate.SectionWallFormation.Cone:
+                    {
+                        float height = Random.Range(template.MinWallColumnSpaceHeight, template.MaxWallColumnSpaceHeight) + template.WallFormationScale;
+
+                        for (int i = 0; i < columnCount; i++)
+                        {
+                            float spacing = Mathf.Cos(i * Mathf.PI / (columnCount - 1)) * template.WallFormationScale;
+
+                            columnPositions[i]       = new Vector2(wallColumnWidth * i, 0f);
+                            wallPositions[i * 2]     = new Vector2(0f, spacing + height);
+                            wallPositions[i * 2 + 1] = new Vector2(0f, -spacing - height);
                         }
                     }
                     break;

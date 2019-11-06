@@ -89,7 +89,8 @@ namespace FlyBit.Templates
             Climb  = 8,
             Drop   = 16,
             Box    = 32,
-            Curve  = 64
+            Curve  = 64,
+            Cone   = 128
         }
 
         #endregion

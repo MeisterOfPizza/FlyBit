@@ -63,10 +63,14 @@ namespace FlyBit.Map
         {
             isPlaying = false;
 
-            wallColumnPool.PoolAllItems();
             scorePointPool.PoolAllItems();
 
             StopCoroutine("Move");
+        }
+
+        public void ResetSection()
+        {
+            wallColumnPool.PoolAllItems();
         }
 
         private void SpawnWallColumns()

@@ -173,7 +173,8 @@ namespace FlyBit.Controllers
 
             livesLeft = MAX_LIVES;
 
-            transform.right = Vector3.right;
+            transform.position = Vector3.zero;
+            transform.right    = Vector3.right;
 
             playerCollider.enabled = false;
 
@@ -273,7 +274,8 @@ namespace FlyBit.Controllers
             crashParticleSystem.Stop();
             crashParticleSystem.Clear();
 
-            transform.right = Vector3.right;
+            transform.position = Vector3.zero;
+            transform.right    = Vector3.right;
 
             MapController.Singleton.RebuildMap(0f);
 

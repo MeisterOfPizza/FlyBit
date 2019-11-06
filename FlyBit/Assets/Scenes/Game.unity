@@ -11150,6 +11150,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: b5dd8b609475b3e40a544de8dd230968, type: 2}
   - {fileID: 11400000, guid: 282ceb2794300a241838579d54958fb7, type: 2}
   - {fileID: 11400000, guid: d2b27f4e37513a6478dc9d0ce5d27895, type: 2}
+  - {fileID: 11400000, guid: dbc6974c1a755314c828b50a6c853a8a, type: 2}
   wallSectionPrefab: {fileID: 8758200121234272091, guid: 774e50e1f15eca246876db06c083d085,
     type: 3}
   scorePointPrefab: {fileID: 1876917450522312521, guid: 58776fba1001add468df36504ff938b6,
@@ -11196,9 +11197,11 @@ MonoBehaviour:
   playerCollider: {fileID: 195887863}
   hyperdriveSpeedlines: {fileID: 1195990552}
   hyperdriveWallSection: {fileID: 509890440}
+  hyperdriveEntrySectionTemplate: {fileID: 11400000, guid: dbc6974c1a755314c828b50a6c853a8a,
+    type: 2}
   hyperdriveAnimationTime: 1
-  hyperdriveTravelTime: 12
-  hyperdriveWaitTime: 1
+  hyperdriveTravelTime: 4.8
+  hyperdriveWaitTime: 2
   hyperdriveMinDistance: 250
   hyperdriveMaxDistance: 500
 --- !u!114 &1782474524

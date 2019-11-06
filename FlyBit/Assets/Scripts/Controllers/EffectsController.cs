@@ -1,5 +1,6 @@
 ﻿using FlyBit.Extensions;
 using FlyBit.Map;
+using FlyBit.Templates;
 using FlyBit.UI;
 using System.Collections;
 using TMPro;
@@ -35,6 +36,9 @@ namespace FlyBit.Controllers
 
         [Space]
         [SerializeField] private HyperdriveWallSection hyperdriveWallSection;
+
+        [Space]
+        [SerializeField] private SectionTemplate hyperdriveEntrySectionTemplate;
 
         [Header("Values - Hyperdrive")]
         [SerializeField] private float hyperdriveAnimationTime = 1f;
@@ -87,25 +91,15 @@ namespace FlyBit.Controllers
 
         public void HyperdriveTravel()
         {
-            playerCollider.enabled       = false;
             cameraFollowAndTrack.enabled = false;
 
+            // Reset the fuel:
             PlayerController.Singleton.AddFuel(float.MaxValue / 2f);
             PlayerController.Singleton.AddPlayerEffect(PlayerController.PlayerEffect.Hyperdrive, float.MaxValue);
 
             MapController.Singleton.OpenCloseMap(true);
 
             StartCoroutine("HyperdriveEffect");
-        }
-
-        public void StartHyperdriveEffects()
-        {
-
-        }
-
-        public void EndHyperdriveEffects()
-        {
-
         }
 
         private IEnumerator HyperdriveEffect()
@@ -125,8 +119,10 @@ namespace FlyBit.Controllers
 
             yield return new WaitForSeconds(0.5f);
 
+            // Give the player control over the hyperdrive travel, giving them the ability to collect score.
             PlayerController.Singleton.AddPlayerEffect(PlayerController.PlayerEffect.HyperdriveController, float.MaxValue);
 
+            // Play the hyperdrive travel effects:
             hyperdriveSpeedlines.Play();
             hyperdriveWallSection.Play();
 
@@ -137,25 +133,34 @@ namespace FlyBit.Controllers
             {
                 travelTimeLeft -= Time.deltaTime;
 
+                // Increase performance:
                 float frameDistance = travelDistance * (Time.deltaTime / hyperdriveTravelTime);
 
+                // Update stats:
                 ScoreController.Singleton.AddDistanceTraveled(frameDistance);
                 ScoreController.Singleton.AddStatRecordValue(ScoreController.StatRecordType.HyperdriveDistanceTraveled, frameDistance);
 
+                // Modify the fuel bar to represent time left on hyperdrive travel:
                 PlayerController.Singleton.UpdateFuelBar(travelTimeLeft / hyperdriveTravelTime);
 
                 yield return new WaitForEndOfFrame();
             }
 
+            // The hyperdrive travel is done, stop all effects:
             hyperdriveSpeedlines.Stop();
             hyperdriveWallSection.Stop();
 
+            playerCollider.enabled = false;
+
+            // Remove the hyperdrive travel controller effect:
             PlayerController.Singleton.RemovePlayerEffect(PlayerController.PlayerEffect.HyperdriveController);
 
             playerAnimator.SetTrigger("Exit Hyperdrive");
 
-            MapController.Singleton.RebuildMap(0f);
+            // Rebuild the map:
+            MapController.Singleton.RebuildMap(MapController.Singleton.PlayerSeeRadius * 3f, hyperdriveEntrySectionTemplate);
 
+            // Cool off the engine, aka let the player drift into the map again.
             float coolOffWaitTime = hyperdriveWaitTime;
 
             while (coolOffWaitTime > 0f)
@@ -164,9 +169,17 @@ namespace FlyBit.Controllers
 
                 playerTransform.position = Vector3.Lerp(playerTransform.position, Vector3.zero, 1f - coolOffWaitTime / hyperdriveWaitTime);
 
+                PlayerController.Singleton.UpdateFuelBar(1f - coolOffWaitTime / hyperdriveWaitTime);
+
+                MapController.Singleton.MoveMap(new Vector3(15f, 0f) * Time.deltaTime);
+
                 yield return new WaitForEndOfFrame();
             }
 
+            // Actually pool the walls:
+            hyperdriveWallSection.ResetSection();
+
+            // Give back control of the player to the user:
             PlayerController.Singleton.RemovePlayerEffect(PlayerController.PlayerEffect.Hyperdrive);
             playerCollider.enabled       = true;
             cameraFollowAndTrack.enabled = true;

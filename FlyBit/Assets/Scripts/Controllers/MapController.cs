@@ -153,10 +153,10 @@ namespace FlyBit.Controllers
 
         #region Building the map
 
-        public void RebuildMap(float offset)
+        public void RebuildMap(float offset, SectionTemplate startSection = null)
         {
             ResetAll();
-            BuildMap(offset);
+            BuildMap(offset, startSection ?? startSectionTemplate);
 
             OpenCloseMap(false);
         }
@@ -176,12 +176,12 @@ namespace FlyBit.Controllers
             lastWallSectionSpawned = null;
         }
 
-        private void BuildMap(float offset)
+        private void BuildMap(float offset, SectionTemplate startSection)
         {
             // Start the current at half the length of the start section.
             Vector2 current = new Vector2(-20f + offset, 0f);
 
-            WallSection wallSection = wallSectionTemplatePairs[startSectionTemplate].GetItem();
+            WallSection wallSection = wallSectionTemplatePairs[startSection].GetItem();
             wallSection.Spawn(current);
 
             current = wallSection.EndPoint;
