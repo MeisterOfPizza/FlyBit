@@ -19,12 +19,15 @@ MonoBehaviour:
   minColumnCount: 25
   maxColumnCount: 50
   maxScorePointFrequency: 0.15
-  maxPowerUpCount: 1
+  maxPowerUpCount: 2
   minWallColumnSpaceHeight: 2.5
   maxWallColumnSpaceHeight: 5
   wallFormationScale: 3
   sectionPowerUps:
-  - spawnChance: 0.15
+  - spawnChance: 0.3
     prefab: {fileID: 6819765001158733578, guid: 7b6a3261f9366414f88952662c378c49,
+      type: 3}
+  - spawnChance: 0.2
+    prefab: {fileID: 6819765001158733578, guid: fb0f7563af8d9f848a1f83ef2c966bfe,
       type: 3}
   possibleFormations: 4

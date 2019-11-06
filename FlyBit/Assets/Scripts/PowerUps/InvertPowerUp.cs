@@ -22,7 +22,15 @@ namespace FlyBit.PowerUps
             // Calculate the score and round it to nearest 10.
             int score = scoreBaseReward + Mathf.FloorToInt(scoreDifficultyReward * DifficultyController.Singleton.NormalizedDifficulty / 10) * 10;
 
-            ScoreController.Singleton.IncreaseScore(score);
+            if (PlayerController.Singleton.HasDubblePoints)
+            {
+                ScoreController.Singleton.IncreaseScore(score * 2);
+                ScoreController.Singleton.AddStatRecordValue(ScoreController.StatRecordType.DubblePointsScoreGained, score);
+            }
+            else
+            {
+                ScoreController.Singleton.IncreaseScore(score);
+            }
 
             ScoreController.Singleton.AddStatRecordValue(ScoreController.StatRecordType.InvertPowerUpsTaken, 1);
             ScoreController.Singleton.AddStatRecordValue(ScoreController.StatRecordType.InvertPowerUpsScoreGained, score);

@@ -33,6 +33,7 @@ namespace FlyBit.Controllers
 
         [Header("Values")]
         [SerializeField] private float playerSeeRadius = 20f;
+        [SerializeField] private float screenHeight    = 6f;
 
         #endregion
 
@@ -43,6 +44,14 @@ namespace FlyBit.Controllers
             get
             {
                 return playerSeeRadius;
+            }
+        }
+
+        public float ScreenHeight
+        {
+            get
+            {
+                return screenHeight;
             }
         }
 
@@ -97,35 +106,29 @@ namespace FlyBit.Controllers
 
         public void Begin()
         {
-            RebuildMap();
-
-            StartCoroutine("SpawnCycle");
+            RebuildMap(0f);
         }
 
         public void End()
         {
             StopAllCoroutines();
 
-            foreach (var pool in wallSectionPools)
-            {
-                foreach (var wallSection in pool.ActiveItemsNonAloc)
-                {
-                    wallSection.OpenCloseSection(true);
-                }
-            }
+            OpenCloseMap(true);
         }
 
         #endregion
 
-        private IEnumerator SpawnCycle()
+        public void MoveMap(Vector3 delta)
         {
-            while (GameController.Singleton.IsMatchRunning)
+            if (GameController.Singleton.IsMatchRunning)
             {
                 foreach (var pool in wallSectionPools)
                 {
                     foreach (var wallSection in pool.ActiveItems)
                     {
-                        if (wallSection.CanDespawn(playerTransform.position.x - playerSeeRadius))
+                        wallSection.transform.position -= delta;
+
+                        if (wallSection.CanDespawn(-playerSeeRadius))
                         {
                             wallSection.Despawn();
                             pool.PoolItem(wallSection);
@@ -133,7 +136,7 @@ namespace FlyBit.Controllers
                     }
                 }
 
-                while (lastWallSectionSpawned.EndPoint.x < playerTransform.position.x + playerSeeRadius)
+                while (Mathf.FloorToInt(lastWallSectionSpawned.EndPoint.x) < playerSeeRadius)
                 {
                     WallSection nextWallSection = GetWallSection(Random.value);
                     nextWallSection.Spawn(lastWallSectionSpawned.EndPoint);
@@ -141,24 +144,21 @@ namespace FlyBit.Controllers
                     lastWallSectionSpawned = nextWallSection;
                 }
 
-                yield return new WaitForEndOfFrame();
+                foreach (var scorePoint in scorePointPool.ActiveItemsNonAloc)
+                {
+                    scorePoint.transform.position -= delta;
+                }
             }
         }
 
         #region Building the map
 
-        public void RebuildMap()
+        public void RebuildMap(float offset)
         {
             ResetAll();
-            BuildMap();
+            BuildMap(offset);
 
-            foreach (var pool in wallSectionPools)
-            {
-                foreach (var wallSection in pool.ActiveItemsNonAloc)
-                {
-                    wallSection.OpenCloseSection(false);
-                }
-            }
+            OpenCloseMap(false);
         }
 
         private void ResetAll()
@@ -176,9 +176,10 @@ namespace FlyBit.Controllers
             lastWallSectionSpawned = null;
         }
 
-        private void BuildMap()
+        private void BuildMap(float offset)
         {
-            Vector2 current = new Vector2(playerTransform.position.x - playerSeeRadius, 0f);
+            // Start the current at half the length of the start section.
+            Vector2 current = new Vector2(-20f + offset, 0f);
 
             WallSection wallSection = wallSectionTemplatePairs[startSectionTemplate].GetItem();
             wallSection.Spawn(current);
@@ -238,6 +239,17 @@ namespace FlyBit.Controllers
             foreach (var scorePoint in scorePointPool.AllItems)
             {
                 scorePoint.SetColor(color);
+            }
+        }
+
+        public void OpenCloseMap(bool open)
+        {
+            foreach (var pool in wallSectionPools)
+            {
+                foreach (var wallSection in pool.ActiveItemsNonAloc)
+                {
+                    wallSection.OpenCloseSection(open);
+                }
             }
         }
 

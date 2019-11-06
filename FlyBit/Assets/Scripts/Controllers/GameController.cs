@@ -31,17 +31,20 @@ namespace FlyBit.Controllers
 
         public void StartMatch()
         {
-            IsMatchRunning = true;
+            if (!PlayerController.Singleton.IsSpawning && !PlayerController.Singleton.IsReviving)
+            {
+                IsMatchRunning = true;
 
-            menuScreen.SetActive(false);
-            gameScreen.SetActive(true);
-            deathScreen.SetActive(false);
+                menuScreen.SetActive(false);
+                gameScreen.SetActive(true);
+                deathScreen.SetActive(false);
 
-            EffectsController.Singleton.ResetAllEffects();
-            DifficultyController.Singleton.Begin();
-            ScoreController.Singleton.Begin();
-            PlayerController.Singleton.ResetPlayer();
-            MapController.Singleton.Begin();
+                EffectsController.Singleton.ResetAllEffects();
+                DifficultyController.Singleton.Begin();
+                ScoreController.Singleton.Begin();
+                PlayerController.Singleton.ResetPlayer();
+                MapController.Singleton.Begin();
+            }
         }
 
         public void EndMatch()

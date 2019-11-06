@@ -27,7 +27,7 @@ namespace FlyBit.Map
         {
             get
             {
-                return endPoint;
+                return (Vector2)transform.position + endPoint;
             }
         }
 
@@ -70,7 +70,7 @@ namespace FlyBit.Map
 
         public void Spawn(Vector2 startPoint)
         {
-            transform.position = startPoint;
+            transform.position = startPoint - new Vector2(0.05f, 0f);
 
             CreateColumnFormation();
         }
@@ -95,7 +95,7 @@ namespace FlyBit.Map
                 wallColumn.OpenCloseColumn(open);
             }
 
-            // The player has died: hide all interactables.
+            // Hide all interactables:
             if (open)
             {
                 powerUpPool.PoolAll();
@@ -225,7 +225,7 @@ namespace FlyBit.Map
                     break;
             }
 
-            endPoint = (Vector2)transform.position + columnPositions[columnPositions.Length - 1] + Vector2.right;
+            endPoint = columnPositions[columnPositions.Length - 1] + Vector2.right;
 
             // Create the wall columns:
             for (int i = 0; i < columnCount; i++)
@@ -240,7 +240,7 @@ namespace FlyBit.Map
         private void SpawnSectionInteractables(Vector2[] columnPositions)
         {
             int scorePointCount = Mathf.Min(Random.Range(0, Mathf.FloorToInt(columnPositions.Length * template.MaxScorePointFrequency)), MapController.Singleton.ScorePointsAvailableToSpawn);
-            int powerUpCount    = Random.Range(0, template.MaxPowerUpCount);
+            int powerUpCount    = Random.Range(0, template.MaxPowerUpCount + 1);
 
             scorePoints = new ScorePoint[scorePointCount];
 

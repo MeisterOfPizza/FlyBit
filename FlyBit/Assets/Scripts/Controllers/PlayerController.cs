@@ -22,10 +22,12 @@ namespace FlyBit.Controllers
         #region Editor
 
         [Header("References")]
+        [SerializeField] private Camera         mainCamera;
         [SerializeField] private Animator       animator;
         [SerializeField] private GameObject     playerModel;
         [SerializeField] private SpriteRenderer fuelBar;
         [SerializeField] private ParticleSystem crashParticleSystem;
+        [SerializeField] private Collider2D     playerCollider;
 
         [Header("UI References")]
         [SerializeField] private Image[] heartIcons = new Image[MAX_LIVES];
@@ -39,6 +41,9 @@ namespace FlyBit.Controllers
         [SerializeField] private float thrustTurnSpeed = 5f;
         [SerializeField] private float fallTurnSpeed   = 3f;
         [SerializeField] private float turnLerpSpeed   = 5f;
+
+        [Space]
+        [SerializeField] private float hyperdriveMoveSpeed = 3f;
 
         [Space]
         [SerializeField] private float initialThrustFuelConsumption = 0.1f;
@@ -55,12 +60,36 @@ namespace FlyBit.Controllers
 
         #region Public properties
 
-        public bool IsDead { get; private set; } = false;
+        public bool IsDead { get; private set; } = true;
+
+        public bool IsSpawning
+        {
+            get
+            {
+                return isSpawning;
+            }
+        }
+
+        public bool IsReviving
+        {
+            get
+            {
+                return isReviving;
+            }
+        }
 
         /// <summary>
         /// Should the physics be inverted on the player?
         /// </summary>
         public bool Invert { get; set; } = false;
+
+        public bool HasDubblePoints
+        {
+            get
+            {
+                return playerEffects.ContainsKey(PlayerEffect.DubblePoints);
+            }
+        }
 
         #endregion
 
@@ -82,7 +111,10 @@ namespace FlyBit.Controllers
 
         public enum PlayerEffect
         {
-            InfiniteFuel
+            InfiniteFuel,
+            DubblePoints,
+            Hyperdrive,
+            HyperdriveController
         }
 
         #endregion
@@ -95,21 +127,30 @@ namespace FlyBit.Controllers
             {
                 UpdatePlayerEffects();
 
-                CheckIfShouldThrust();
-
-                if (!isThrusting)
+                // The player should not be able to move nor fall if they are traveling by hyperdrive:
+                if (!playerEffects.ContainsKey(PlayerEffect.Hyperdrive))
                 {
-                    Fall();
+                    CheckIfShouldThrust();
 
-                    fuel = Mathf.Clamp(fuel + Time.deltaTime, 0f, maxFuel);
+                    if (!isThrusting)
+                    {
+                        Fall();
+
+                        // Refill fuel
+                        AddFuel(Time.deltaTime);
+                    }
+                    else
+                    {
+                        Thurst();
+                    }
                 }
                 else
                 {
-                    Thurst();
+                    if (playerEffects.ContainsKey(PlayerEffect.HyperdriveController))
+                    {
+                        AimHyperdrive();
+                    }
                 }
-
-                fuelBar.material.SetFloat("_FillAmount", fuel / maxFuel);
-                fuelBar.color = fuelGradient.Evaluate(fuel / maxFuel);
             }
         }
 
@@ -121,12 +162,10 @@ namespace FlyBit.Controllers
         {
             ClearPlayerEffects();
 
-            fuel      = maxFuel;
             moveSpeed = fallMoveSpeed;
             turnSpeed = fallTurnSpeed;
 
-            fuelBar.material.SetFloat("_FillAmount", fuel / maxFuel);
-            fuelBar.color = fuelGradient.Evaluate(fuel / maxFuel);
+            AddFuel(maxFuel);
 
             isSpawning = true;
             isReviving = false;
@@ -134,8 +173,9 @@ namespace FlyBit.Controllers
 
             livesLeft = MAX_LIVES;
 
-            transform.position = Vector3.zero;
-            transform.right    = Vector3.right;
+            transform.right = Vector3.right;
+
+            playerCollider.enabled = false;
 
             crashParticleSystem.Stop();
             crashParticleSystem.Clear();
@@ -161,8 +201,7 @@ namespace FlyBit.Controllers
 
             while (timeLeft > 0f)
             {
-                fuelBar.material.SetFloat("_FillAmount", 1f - timeLeft / spawnInvisibilityTime);
-                fuelBar.color = fuelGradient.Evaluate(1f - timeLeft / spawnInvisibilityTime);
+                UpdateFuelBar(1f - timeLeft / spawnInvisibilityTime);
 
                 timeLeft -= Time.deltaTime;
 
@@ -174,12 +213,13 @@ namespace FlyBit.Controllers
             DifficultyController.Singleton.Pause(false);
             ScoreController.Singleton.PauseTimeAlive(false);
 
-            isSpawning = false;
+            isSpawning             = false;
+            playerCollider.enabled = true;
         }
 
         private void Crash()
         {
-            if (!isSpawning && !isReviving && !IsDead)
+            if (!isSpawning && !isReviving && !IsDead && !playerEffects.ContainsKey(PlayerEffect.Hyperdrive))
             {
                 if (livesLeft > 0)
                 {
@@ -209,8 +249,11 @@ namespace FlyBit.Controllers
 
             moveSpeed  = fallMoveSpeed;
             turnSpeed  = fallTurnSpeed;
-            fuel       = maxFuel;
             isReviving = true;
+
+            AddFuel(maxFuel);
+
+            playerCollider.enabled = false;
 
             playerModel.SetActive(false);
 
@@ -227,16 +270,18 @@ namespace FlyBit.Controllers
             playerModel.SetActive(true);
             animator.Play("Revive_Blink");
 
-            transform.position = Vector2.zero;
-            transform.right    = Vector3.right;
-            MapController.Singleton.RebuildMap();
+            crashParticleSystem.Stop();
+            crashParticleSystem.Clear();
+
+            transform.right = Vector3.right;
+
+            MapController.Singleton.RebuildMap(0f);
 
             float timeLeft = reviveInvisibilityTime;
 
             while (timeLeft > 0f)
             {
-                fuelBar.material.SetFloat("_FillAmount", 1f - timeLeft / reviveInvisibilityTime);
-                fuelBar.color = fuelGradient.Evaluate(1f - timeLeft / reviveInvisibilityTime);
+                UpdateFuelBar(1f - timeLeft / reviveInvisibilityTime);
 
                 timeLeft -= Time.deltaTime;
 
@@ -248,12 +293,14 @@ namespace FlyBit.Controllers
             DifficultyController.Singleton.Pause(false);
             ScoreController.Singleton.PauseTimeAlive(false);
 
-            isReviving = false;
+            isReviving             = false;
+            playerCollider.enabled = true;
         }
 
         private void Die()
         {
             playerModel.gameObject.SetActive(false);
+            playerCollider.enabled = false;
 
             IsDead = true;
 
@@ -288,7 +335,7 @@ namespace FlyBit.Controllers
 
                 if (shouldThrust && !isThrusting && !playerEffects.ContainsKey(PlayerEffect.InfiniteFuel))
                 {
-                    fuel = Mathf.Clamp(fuel - initialThrustFuelConsumption, 0f, maxFuel);
+                    AddFuel(-initialThrustFuelConsumption);
                 }
 
                 isThrusting = shouldThrust;
@@ -303,14 +350,15 @@ namespace FlyBit.Controllers
         {
             if (!playerEffects.ContainsKey(PlayerEffect.InfiniteFuel))
             {
-                fuel = Mathf.Clamp(fuel - Time.deltaTime, 0f, maxFuel);
+                AddFuel(-Time.deltaTime);
             }
 
             moveSpeed = Mathf.Lerp(moveSpeed, thrustMoveSpeed, moveLerpSpeed * Time.deltaTime);
             turnSpeed = Mathf.Lerp(turnSpeed, thrustTurnSpeed, turnLerpSpeed * Time.deltaTime);
 
-            transform.right     = Vector3.Lerp(transform.right, Invert ? Vector3.down : Vector3.up, turnSpeed * Time.deltaTime);
-            transform.position += transform.right * moveSpeed * Time.deltaTime;
+            transform.right = Vector3.Lerp(transform.right, Invert ? Vector3.down : Vector3.up, turnSpeed * Time.deltaTime);
+
+            MapController.Singleton.MoveMap(transform.right * moveSpeed * Time.deltaTime);
 
             ScoreController.Singleton.AddDistanceTraveled(transform.right.magnitude * moveSpeed * Time.deltaTime);
         }
@@ -324,10 +372,45 @@ namespace FlyBit.Controllers
             moveSpeed = Mathf.Lerp(moveSpeed, fallMoveSpeed, moveLerpSpeed * Time.deltaTime);
             turnSpeed = Mathf.Lerp(turnSpeed, fallTurnSpeed, turnLerpSpeed * Time.deltaTime);
 
-            transform.right     = Vector3.Lerp(transform.right, Invert ? Vector3.up : Vector3.down, turnSpeed * Time.deltaTime);
-            transform.position += transform.right * moveSpeed * Time.deltaTime;
+            transform.right = Vector3.Lerp(transform.right, Invert ? Vector3.up : Vector3.down, turnSpeed * Time.deltaTime);
+
+            MapController.Singleton.MoveMap(transform.right * moveSpeed * Time.deltaTime);
 
             ScoreController.Singleton.AddDistanceTraveled(transform.right.magnitude * moveSpeed * Time.deltaTime);
+        }
+
+        #endregion
+
+        #region Hyperdrive
+
+        private void AimHyperdrive()
+        {
+            float direction = 0f;
+
+#if UNITY_STANDALONE
+            if (!MathE.IsPointerOverUIObject(Input.mousePosition) && Input.GetMouseButton(0))
+            {
+                Vector2 point = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+
+                direction = Mathf.Clamp(point.y - transform.position.y, -1f, 1f);
+            }
+            else
+            {
+                if (Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
+                {
+                    direction = 1f;
+                }
+                else if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
+                {
+                    direction = -1f;
+                }
+            }
+#elif UNITY_IOS || UNITY_ANDROID
+
+#endif
+
+            transform.position += Vector3.up * hyperdriveMoveSpeed * direction * Time.deltaTime;
+            transform.position  = new Vector3(0f, Mathf.Clamp(transform.position.y, -MapController.Singleton.ScreenHeight / 2f, MapController.Singleton.ScreenHeight / 2f));
         }
 
         #endregion
@@ -376,6 +459,23 @@ namespace FlyBit.Controllers
         private void ClearPlayerEffects()
         {
             playerEffects.Clear();
+        }
+
+        #endregion
+
+        #region Helpers
+
+        public void AddFuel(float delta)
+        {
+            fuel = Mathf.Clamp(fuel + delta, 0f, maxFuel);
+
+            UpdateFuelBar(fuel / maxFuel);
+        }
+
+        public void UpdateFuelBar(float percent)
+        {
+            fuelBar.material.SetFloat("_FillAmount", percent);
+            fuelBar.color = fuelGradient.Evaluate(percent);
         }
 
         #endregion

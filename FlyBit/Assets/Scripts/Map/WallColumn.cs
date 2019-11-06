@@ -1,5 +1,4 @@
 ﻿using FlyBit.Controllers;
-using System;
 using System.Collections;
 using UnityEngine;
 
@@ -18,7 +17,6 @@ namespace FlyBit.Map
         [SerializeField] private SpriteRenderer bottomWall;
 
         [Header("Values")]
-        [SerializeField] private float screenHeight = 5f;
         [SerializeField] private float moveWallTime = 1.5f;
 
         #endregion
@@ -45,8 +43,8 @@ namespace FlyBit.Map
         private IEnumerator MoveWalls(bool open)
         {
             float   time         = moveWallTime;
-            Vector2 topTarget    = new Vector2(transform.position.x, open ? PlayerController.Singleton.transform.position.y + screenHeight : topWall.transform.position.y);
-            Vector2 bottomTarget = new Vector2(transform.position.x, open ? PlayerController.Singleton.transform.position.y - screenHeight : bottomWall.transform.position.y);
+            Vector2 topTarget    = new Vector2(0, open ? MapController.Singleton.ScreenHeight - transform.position.y : topWall.transform.localPosition.y);
+            Vector2 bottomTarget = new Vector2(0, open ? -(transform.position.y + MapController.Singleton.ScreenHeight) : bottomWall.transform.localPosition.y);
 
             if (!open)
             {
@@ -58,14 +56,11 @@ namespace FlyBit.Map
             {
                 time -= Time.deltaTime;
 
-                topWall.transform.position    = Vector3.Lerp(topWall.transform.position, topTarget, moveWallTime * screenHeight * Time.deltaTime);
-                bottomWall.transform.position = Vector3.Lerp(bottomWall.transform.position, bottomTarget, moveWallTime * screenHeight * Time.deltaTime);
+                float speed = 1f - time / moveWallTime;
 
-                yield return new WaitForEndOfFrame();
-            }
+                topWall.transform.localPosition    = Vector2.Lerp(topWall.transform.localPosition, topTarget, speed);
+                bottomWall.transform.localPosition = Vector2.Lerp(bottomWall.transform.localPosition, bottomTarget, speed);
 
-            while (transform.position.x > PlayerController.Singleton.transform.position.x - MapController.Singleton.PlayerSeeRadius)
-            {
                 yield return new WaitForEndOfFrame();
             }
         }

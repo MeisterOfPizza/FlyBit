@@ -71,8 +71,8 @@ namespace FlyBit.Controllers
             { StatRecordType.ExtraLifePowerUpsMissed,    0f },
             { StatRecordType.DubblePointsPowerUpsTaken,  0f },
             { StatRecordType.DubblePointsScoreGained,    0f },
-            { StatRecordType.FastTravelPowerUpsTaken,    0f },
-            { StatRecordType.FastTravelDistanceTraveled, 0f }
+            { StatRecordType.HyperdrivePowerUpsTaken,    0f },
+            { StatRecordType.HyperdriveDistanceTraveled, 0f }
         };
 
         #endregion
@@ -91,8 +91,8 @@ namespace FlyBit.Controllers
             ExtraLifePowerUpsMissed,
             DubblePointsPowerUpsTaken,
             DubblePointsScoreGained,
-            FastTravelPowerUpsTaken,
-            FastTravelDistanceTraveled
+            HyperdrivePowerUpsTaken,
+            HyperdriveDistanceTraveled
         }
 
         #endregion

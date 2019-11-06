@@ -1,6 +1,5 @@
 ﻿using FlyBit.Controllers;
 using FlyBit.Extensions;
-using System;
 using UnityEngine;
 
 #pragma warning disable 0649
@@ -47,7 +46,16 @@ namespace FlyBit.Map
             {
                 canBeTaken = false;
 
-                ScoreController.Singleton.IncreaseScore(10);
+                if (PlayerController.Singleton.HasDubblePoints)
+                {
+                    ScoreController.Singleton.IncreaseScore(20);
+                    ScoreController.Singleton.AddStatRecordValue(ScoreController.StatRecordType.DubblePointsScoreGained, 10);
+                }
+                else
+                {
+                    ScoreController.Singleton.IncreaseScore(10);
+                }
+
                 ScoreController.Singleton.AddStatRecordValue(ScoreController.StatRecordType.ScorePointsTaken, 1);
                 ScoreController.Singleton.AddStatRecordValue(ScoreController.StatRecordType.ScorePointsScoreGained, 10);
 
