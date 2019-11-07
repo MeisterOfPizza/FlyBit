@@ -1,5 +1,6 @@
 ﻿using FlyBit.Extensions;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -19,6 +20,12 @@ namespace FlyBit.UI
 
         #endregion
 
+        #region Private variables
+
+        private HashSet<ColorOption> colorOptionsCollection = new HashSet<ColorOption>();
+
+        #endregion
+
         #region Classes
 
         [Serializable]
@@ -27,6 +34,14 @@ namespace FlyBit.UI
 
             [SerializeField] private Color   defaultColor = Color.white;
             [SerializeField] private Graphic targetGraphic;
+
+            public Graphic Graphic
+            {
+                get
+                {
+                    return targetGraphic;
+                }
+            }
 
             public ColorOption(Color color, Graphic graphic)
             {
@@ -43,21 +58,42 @@ namespace FlyBit.UI
 
         #endregion
 
+        private void Awake()
+        {
+            foreach (var option in colorOptions)
+            {
+                colorOptionsCollection.Add(option);
+            }
+        }
+
+        public void AddColorOption(Color defaultColor, Graphic graphic)
+        {
+            colorOptionsCollection.Add(new ColorOption(defaultColor, graphic));
+        }
+
         public void AddColorOptions(Color defaultColor, params Graphic[] graphics)
         {
-            var options = colorOptions.ToList();
-
             foreach (var graphic in graphics)
             {
-                options.Add(new ColorOption(defaultColor, graphic));
+                colorOptionsCollection.Add(new ColorOption(defaultColor, graphic));
             }
+        }
 
-            colorOptions = options.ToArray();
+        public void RemoveColorOption(Graphic graphic)
+        {
+            var option = colorOptionsCollection.FirstOrDefault(c => c.Graphic == graphic);
+
+            colorOptionsCollection.Remove(option);
+        }
+
+        public void ClearColorOptions()
+        {
+            colorOptionsCollection.Clear();
         }
 
         public void SetColor(bool invert)
         {
-            foreach (var option in colorOptions)
+            foreach (var option in colorOptionsCollection)
             {
                 option.SetColor(invert);
             }

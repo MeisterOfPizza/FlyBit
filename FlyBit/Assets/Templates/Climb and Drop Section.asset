@@ -33,4 +33,7 @@ MonoBehaviour:
   - spawnChance: 0.1
     prefab: {fileID: 6819765001158733578, guid: fb0f7563af8d9f848a1f83ef2c966bfe,
       type: 3}
+  - spawnChance: 0.05
+    prefab: {fileID: 6819765001158733578, guid: 5b2521c43d07e964285cf0cad649abe1,
+      type: 3}
   possibleFormations: 24

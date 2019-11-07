@@ -96,7 +96,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spriteRenderer: {fileID: 6819765001158733576}
-  dubblePointsDuration: 30
+  uiPlayerEffectIcon: {fileID: 21300000, guid: faac74980867ba248b8ab5d273fdd8c5, type: 3}
+  dubblePointsDuration: 15
 --- !u!61 &6819765001158733577
 BoxCollider2D:
   m_ObjectHideFlags: 0

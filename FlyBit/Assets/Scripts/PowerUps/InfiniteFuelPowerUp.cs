@@ -1,6 +1,8 @@
 ﻿using FlyBit.Controllers;
 using UnityEngine;
 
+#pragma warning disable 0649
+
 namespace FlyBit.PowerUps
 {
 
@@ -9,14 +11,18 @@ namespace FlyBit.PowerUps
 
         #region Editor
 
+        [Header("References")]
+        [SerializeField] private Sprite uiPlayerEffectIcon;
+
         [Header("Values")]
-        [SerializeField] private float powerUpDuration = 3f;
+        [SerializeField] private float infiniteFuelDuration = 3f;
 
         #endregion
 
         protected override void Activate()
         {
-            PlayerController.Singleton.AddPlayerEffect(PlayerController.PlayerEffect.InfiniteFuel, powerUpDuration);
+            PlayerEffectsController.Singleton.AddPlayerEffect(PlayerEffect.InfiniteFuel, infiniteFuelDuration);
+            PlayerEffectsController.Singleton.AddUIPlayerEffect(PlayerEffect.InfiniteFuel, uiPlayerEffectIcon, infiniteFuelDuration);
 
             ScoreController.Singleton.AddStatRecordValue(ScoreController.StatRecordType.InfiniteFuelPowerUpsTaken, 1);
         }

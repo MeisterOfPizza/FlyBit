@@ -105,6 +105,8 @@ namespace FlyBit.Map
                     }
                 }
 
+                bool scorePointSpawned = false;
+
                 while (lastSpawnedWallColumn.transform.position.x < MapController.Singleton.PlayerSeeRadius)
                 {
                     var wallColumn = wallColumnPool.GetItem();
@@ -113,16 +115,18 @@ namespace FlyBit.Map
                     wallColumn.OpenCloseColumn(true);
                     lastSpawnedWallColumn = wallColumn;
 
-                    if (scorePointSpawnChance >= Random.value && scorePointPool.HasAvailableItems)
+                    if (!scorePointSpawned && scorePointSpawnChance >= Random.value && scorePointPool.HasAvailableItems)
                     {
                         var scorePoint = scorePointPool.GetItem();
                         scorePoint.transform.position = new Vector3(lastSpawnedWallColumn.transform.position.x, Random.Range(-MapController.Singleton.ScreenHeight / 2f, MapController.Singleton.ScreenHeight / 2f));
+
+                        scorePointSpawned = true;
                     }
                 }
 
                 foreach (var scorePoint in scorePointPool.ActiveItems)
                 {
-                    scorePoint.transform.position -= delta;
+                    scorePoint.transform.position -= delta * 0.5f;
 
                     if (scorePoint.transform.position.x < -MapController.Singleton.PlayerSeeRadius)
                     {

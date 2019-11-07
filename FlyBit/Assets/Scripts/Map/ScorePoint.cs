@@ -46,7 +46,7 @@ namespace FlyBit.Map
             {
                 canBeTaken = false;
 
-                if (PlayerController.Singleton.HasDubblePoints)
+                if (PlayerEffectsController.Singleton.HasPlayerEffect(PlayerEffect.DubblePoints))
                 {
                     ScoreController.Singleton.IncreaseScore(20);
                     ScoreController.Singleton.AddStatRecordValue(ScoreController.StatRecordType.DubblePointsScoreGained, 10);

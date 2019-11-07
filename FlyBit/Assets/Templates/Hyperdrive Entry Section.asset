@@ -22,6 +22,6 @@ MonoBehaviour:
   maxPowerUpCount: 0
   minWallColumnSpaceHeight: 3
   maxWallColumnSpaceHeight: 5
-  wallFormationScale: 3
+  wallFormationScale: 2
   sectionPowerUps: []
   possibleFormations: 128

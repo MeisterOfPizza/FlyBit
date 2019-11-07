@@ -208,9 +208,9 @@ namespace FlyBit.Controllers
             int i = wallSectionTemplatePairs.Count;
             foreach (var pair in wallSectionTemplatePairs)
             {
-                if (pair.Key.SpawnChance >= value)
+                if (pair.Key.SpawnChance >= value && pair.Key.SpawnChance > 0f)
                 {
-                    var valuablePairs = wallSectionTemplatePairs.Take(i).Where(p => p.Value.HasAvailableItems && p.Key.MinNormalizedDifficulty <= DifficultyController.Singleton.NormalizedDifficulty);
+                    var valuablePairs = wallSectionTemplatePairs.Take(i).Where(p => p.Value.HasAvailableItems && p.Key.MinNormalizedDifficulty <= DifficultyController.Singleton.NormalizedDifficulty && p.Key.SpawnChance > 0f);
 
                     return valuablePairs.Count() > 2 ? valuablePairs.ElementAt(Random.Range(2, valuablePairs.Count())).Value.GetItem() : wallSectionTemplatePairs[defaultSectionTemplate].GetItem();
                 }

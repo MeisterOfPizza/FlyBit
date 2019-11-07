@@ -1,5 +1,4 @@
-﻿using FlyBit.Extensions;
-using FlyBit.Map;
+﻿using FlyBit.Map;
 using FlyBit.Templates;
 using FlyBit.UI;
 using System.Collections;
@@ -18,12 +17,12 @@ namespace FlyBit.Controllers
 
         [Header("References - Invert Colors")]
         [SerializeField] private Camera         mainCamera;
-        [SerializeField] private FollowAndTrack cameraFollowAndTrack;
         [SerializeField] private SpriteRenderer playerSpriteRenderer;
         [SerializeField] private UIColorInvert  gameScreen;
         [SerializeField] private UIColorInvert  deathScreen;
         [SerializeField] private UIColorInvert  resetGameButton;
         [SerializeField] private UIColorInvert  uiGainedScoreColorInvert;
+        [SerializeField] private UIColorInvert  uiPlayerEffectsColorInvert;
 
         [Space]
         [SerializeField] private TMP_FontAsset textFontAsset;
@@ -78,9 +77,9 @@ namespace FlyBit.Controllers
             deathScreen.SetColor(invertEffectIsOn);
             resetGameButton.SetColor(invertEffectIsOn);
             uiGainedScoreColorInvert.SetColor(invertEffectIsOn);
+            uiPlayerEffectsColorInvert.SetColor(invertEffectIsOn);
 
-            textFontAsset.material.SetColor("_UnderlayColor", invertEffectIsOn ? new Color(1f, 1f, 1f, 0.5f) : Color.black);
-            textFontAsset.material.SetFloat("_UnderlayDilate", invertEffectIsOn ? -0.5f : 1f);
+            textFontAsset.material.SetColor("_UnderlayColor", invertEffectIsOn ? Color.white : Color.black);
 
             hyperdriveSpeedlines.InvertSpeedlineColors(invertEffectIsOn);
             hyperdriveWallSection.SetColor(invertEffectIsOn ? Color.white : Color.black);
@@ -91,11 +90,9 @@ namespace FlyBit.Controllers
 
         public void HyperdriveTravel()
         {
-            cameraFollowAndTrack.enabled = false;
-
             // Reset the fuel:
             PlayerController.Singleton.AddFuel(float.MaxValue / 2f);
-            PlayerController.Singleton.AddPlayerEffect(PlayerController.PlayerEffect.Hyperdrive, float.MaxValue);
+            PlayerEffectsController.Singleton.AddPlayerEffect(PlayerEffect.Hyperdrive, float.MaxValue);
 
             MapController.Singleton.OpenCloseMap(true);
 
@@ -117,23 +114,26 @@ namespace FlyBit.Controllers
 
             playerAnimator.Play("Hyperdrive_Begin");
 
+            CameraEffectsController.Singleton.PlayHyperdriveZoom(0.5f, 1.5f);
+
             yield return new WaitForSeconds(0.5f);
 
             // Give the player control over the hyperdrive travel, giving them the ability to collect score.
-            PlayerController.Singleton.AddPlayerEffect(PlayerController.PlayerEffect.HyperdriveController, float.MaxValue);
+            PlayerEffectsController.Singleton.AddPlayerEffect(PlayerEffect.HyperdriveController, float.MaxValue);
 
             // Play the hyperdrive travel effects:
             hyperdriveSpeedlines.Play();
             hyperdriveWallSection.Play();
 
-            float travelTimeLeft = hyperdriveTravelTime;
-            float travelDistance = Random.Range(hyperdriveMinDistance, hyperdriveMaxDistance);
+            float travelTimeLeft  = hyperdriveTravelTime;
+            float travelDistance  = Random.Range(hyperdriveMinDistance, hyperdriveMaxDistance);
+            bool  hasBegunExiting = false;
 
             while (travelTimeLeft > 0f)
             {
                 travelTimeLeft -= Time.deltaTime;
 
-                // Increase performance:
+                // Increase performance by storing the frameDistance to avoid duplicate calculations:
                 float frameDistance = travelDistance * (Time.deltaTime / hyperdriveTravelTime);
 
                 // Update stats:
@@ -142,6 +142,13 @@ namespace FlyBit.Controllers
 
                 // Modify the fuel bar to represent time left on hyperdrive travel:
                 PlayerController.Singleton.UpdateFuelBar(travelTimeLeft / hyperdriveTravelTime);
+
+                if (travelTimeLeft <= 1.2f && !hasBegunExiting)
+                {
+                    playerAnimator.SetTrigger("Exit Hyperdrive");
+
+                    hasBegunExiting = true;
+                }
 
                 yield return new WaitForEndOfFrame();
             }
@@ -153,9 +160,7 @@ namespace FlyBit.Controllers
             playerCollider.enabled = false;
 
             // Remove the hyperdrive travel controller effect:
-            PlayerController.Singleton.RemovePlayerEffect(PlayerController.PlayerEffect.HyperdriveController);
-
-            playerAnimator.SetTrigger("Exit Hyperdrive");
+            PlayerEffectsController.Singleton.RemovePlayerEffect(PlayerEffect.HyperdriveController);
 
             // Rebuild the map:
             MapController.Singleton.RebuildMap(MapController.Singleton.PlayerSeeRadius * 3f, hyperdriveEntrySectionTemplate);
@@ -180,9 +185,8 @@ namespace FlyBit.Controllers
             hyperdriveWallSection.ResetSection();
 
             // Give back control of the player to the user:
-            PlayerController.Singleton.RemovePlayerEffect(PlayerController.PlayerEffect.Hyperdrive);
-            playerCollider.enabled       = true;
-            cameraFollowAndTrack.enabled = true;
+            PlayerEffectsController.Singleton.RemovePlayerEffect(PlayerEffect.Hyperdrive);
+            playerCollider.enabled = true;
         }
 
     }

@@ -1,7 +1,5 @@
 ﻿using FlyBit.Extensions;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -83,19 +81,9 @@ namespace FlyBit.Controllers
         /// </summary>
         public bool Invert { get; set; } = false;
 
-        public bool HasDubblePoints
-        {
-            get
-            {
-                return playerEffects.ContainsKey(PlayerEffect.DubblePoints);
-            }
-        }
-
         #endregion
 
         #region Private variables
-
-        private Dictionary<PlayerEffect, float> playerEffects = new Dictionary<PlayerEffect, float>();
 
         private bool  isSpawning;
         private bool  isReviving;
@@ -107,28 +95,16 @@ namespace FlyBit.Controllers
 
         #endregion
 
-        #region Enums
-
-        public enum PlayerEffect
-        {
-            InfiniteFuel,
-            DubblePoints,
-            Hyperdrive,
-            HyperdriveController
-        }
-
-        #endregion
-
         #region MonoBehaviour
 
         private void Update()
         {
             if (GameController.Singleton.IsMatchRunning && !IsDead && !isSpawning && !isReviving)
             {
-                UpdatePlayerEffects();
+                PlayerEffectsController.Singleton.UpdatePlayerEffects();
 
                 // The player should not be able to move nor fall if they are traveling by hyperdrive:
-                if (!playerEffects.ContainsKey(PlayerEffect.Hyperdrive))
+                if (!PlayerEffectsController.Singleton.HasPlayerEffect(PlayerEffect.Hyperdrive))
                 {
                     CheckIfShouldThrust();
 
@@ -146,7 +122,7 @@ namespace FlyBit.Controllers
                 }
                 else
                 {
-                    if (playerEffects.ContainsKey(PlayerEffect.HyperdriveController))
+                    if (PlayerEffectsController.Singleton.HasPlayerEffect(PlayerEffect.HyperdriveController))
                     {
                         AimHyperdrive();
                     }
@@ -160,7 +136,7 @@ namespace FlyBit.Controllers
 
         public void ResetPlayer()
         {
-            ClearPlayerEffects();
+            PlayerEffectsController.Singleton.ClearPlayerEffects();
 
             moveSpeed = fallMoveSpeed;
             turnSpeed = fallTurnSpeed;
@@ -220,7 +196,7 @@ namespace FlyBit.Controllers
 
         private void Crash()
         {
-            if (!isSpawning && !isReviving && !IsDead && !playerEffects.ContainsKey(PlayerEffect.Hyperdrive))
+            if (!isSpawning && !isReviving && !IsDead && !PlayerEffectsController.Singleton.HasPlayerEffect(PlayerEffect.Hyperdrive))
             {
                 if (livesLeft > 0)
                 {
@@ -235,6 +211,8 @@ namespace FlyBit.Controllers
 
                 if (livesLeft >= 0)
                 {
+                    CameraEffectsController.Singleton.PlayShakeCamera(0.1f, 0.3f);
+
                     Revive();
                 }
                 else
@@ -246,7 +224,7 @@ namespace FlyBit.Controllers
 
         private void Revive()
         {
-            ClearPlayerEffects();
+            PlayerEffectsController.Singleton.ClearPlayerEffects();
 
             moveSpeed  = fallMoveSpeed;
             turnSpeed  = fallTurnSpeed;
@@ -335,7 +313,7 @@ namespace FlyBit.Controllers
 
 #endif
 
-                if (shouldThrust && !isThrusting && !playerEffects.ContainsKey(PlayerEffect.InfiniteFuel))
+                if (shouldThrust && !isThrusting && !PlayerEffectsController.Singleton.HasPlayerEffect(PlayerEffect.InfiniteFuel))
                 {
                     AddFuel(-initialThrustFuelConsumption);
                 }
@@ -350,7 +328,7 @@ namespace FlyBit.Controllers
 
         private void Thurst()
         {
-            if (!playerEffects.ContainsKey(PlayerEffect.InfiniteFuel))
+            if (!PlayerEffectsController.Singleton.HasPlayerEffect(PlayerEffect.InfiniteFuel))
             {
                 AddFuel(-Time.deltaTime);
             }
@@ -422,45 +400,6 @@ namespace FlyBit.Controllers
         private void OnCollisionEnter2D(Collision2D collision)
         {
             Crash();
-        }
-
-        #endregion
-
-        #region Player effects
-
-        public void AddPlayerEffect(PlayerEffect playerEffect, float duration)
-        {
-            playerEffects[playerEffect] = duration;
-        }
-
-        public void RemovePlayerEffect(PlayerEffect playerEffect)
-        {
-            playerEffects.Remove(playerEffect);
-        }
-
-        private void UpdatePlayerEffects()
-        {
-            foreach (var effect in playerEffects.ToList())
-            {
-                if (effect.Value <= 0)
-                {
-                    RemovePlayerEffect(effect.Key);
-                }
-                else
-                {
-                    playerEffects[effect.Key] -= Time.deltaTime;
-
-                    if (effect.Key == PlayerEffect.InfiniteFuel)
-                    {
-                        ScoreController.Singleton.AddStatRecordValue(ScoreController.StatRecordType.InfiniteFuelDuration, Time.deltaTime);
-                    }
-                }
-            }
-        }
-
-        private void ClearPlayerEffects()
-        {
-            playerEffects.Clear();
         }
 
         #endregion
