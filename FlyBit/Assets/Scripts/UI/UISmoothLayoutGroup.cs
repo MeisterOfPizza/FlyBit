@@ -53,7 +53,9 @@ namespace FlyBit.Assets.Scripts.UI
             }
         }
 
-        protected override void OnValidate()
+#pragma warning disable CS0114 // Member hides inherited member; missing override keyword
+        private void OnValidate()
+#pragma warning restore CS0114 // Member hides inherited member; missing override keyword
         {
             if (Application.isPlaying)
             {

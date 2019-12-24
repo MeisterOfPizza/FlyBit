@@ -1,11 +1,12 @@
-﻿using UnityEngine;
+﻿using TMPro;
+using UnityEngine;
 
 #pragma warning disable 0649
 
 namespace FlyBit.Controllers
 {
 
-    class GameController : Controller<GameController>
+    public class GameController : Controller<GameController>
     {
 
         #region Editor
@@ -27,6 +28,10 @@ namespace FlyBit.Controllers
         {
             // TODO: Set fullscreen for demos.
             Screen.fullScreen = true;
+
+#if UNITY_ANDROID || UNITY_IOS
+            Application.targetFrameRate = 60;
+#endif
         }
 
         public void StartMatch()

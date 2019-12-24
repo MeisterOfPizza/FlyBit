@@ -5,7 +5,7 @@
     /// Base class for all controllers.
     /// Do not override Unity's default Awake, use <see cref="OnAwake"/> instead.
     /// </summary>
-    abstract class Controller<T> : MonoController where T : Controller<T>
+    public abstract class Controller<T> : MonoController where T : Controller<T>
     {
 
         #region Static properties

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FlyBit.Controllers;
+using System;
 using UnityEngine;
 
 #pragma warning disable 0649
@@ -13,6 +14,9 @@ namespace FlyBit.PowerUps
 
         [Header("References")]
         [SerializeField] private SpriteRenderer spriteRenderer;
+
+        [Space]
+        [SerializeField] private AudioClip[] onActivatedAudioClips;
 
         #endregion
 
@@ -47,6 +51,8 @@ namespace FlyBit.PowerUps
             if (!isActivated)
             {
                 isActivated = true;
+
+                PlayerController.Singleton.PlayAudioClip(onActivatedAudioClips[UnityEngine.Random.Range(0, onActivatedAudioClips.Length)], SettingsController.Singleton.EffectsVolume);
 
                 Activate();
                 Pool();

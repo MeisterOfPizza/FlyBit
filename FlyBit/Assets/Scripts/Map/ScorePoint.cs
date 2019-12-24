@@ -15,6 +15,9 @@ namespace FlyBit.Map
         [Header("References")]
         [SerializeField] private SpriteRenderer spriteRenderer;
 
+        [Space]
+        [SerializeField] private AudioClip[] onCollectedAudioClips;
+
         #endregion
 
         #region Private variables
@@ -58,6 +61,8 @@ namespace FlyBit.Map
 
                 ScoreController.Singleton.AddStatRecordValue(ScoreController.StatRecordType.ScorePointsTaken, 1);
                 ScoreController.Singleton.AddStatRecordValue(ScoreController.StatRecordType.ScorePointsScoreGained, 10);
+
+                PlayerController.Singleton.PlayAudioClip(onCollectedAudioClips[Random.Range(0, onCollectedAudioClips.Length)], SettingsController.Singleton.EffectsVolume);
 
                 pool.PoolItem(this);
             }

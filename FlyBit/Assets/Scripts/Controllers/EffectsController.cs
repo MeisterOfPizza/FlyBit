@@ -10,7 +10,7 @@ using UnityEngine;
 namespace FlyBit.Controllers
 {
 
-    class EffectsController : Controller<EffectsController>
+    public class EffectsController : Controller<EffectsController>
     {
 
         #region Editor
@@ -79,7 +79,7 @@ namespace FlyBit.Controllers
             uiGainedScoreColorInvert.SetColor(invertEffectIsOn);
             uiPlayerEffectsColorInvert.SetColor(invertEffectIsOn);
 
-            textFontAsset.material.SetColor("_UnderlayColor", invertEffectIsOn ? Color.white : Color.black);
+            textFontAsset.material.SetColor(ShaderUtilities.ID_UnderlayColor, invertEffectIsOn ? Color.white : Color.black);
 
             hyperdriveSpeedlines.InvertSpeedlineColors(invertEffectIsOn);
             hyperdriveWallSection.SetColor(invertEffectIsOn ? Color.white : Color.black);

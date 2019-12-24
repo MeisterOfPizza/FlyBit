@@ -26,6 +26,11 @@ namespace FlyBit.Controllers
         [SerializeField] private SpriteRenderer fuelBar;
         [SerializeField] private ParticleSystem crashParticleSystem;
         [SerializeField] private Collider2D     playerCollider;
+        [SerializeField] private AudioSource    audioSource;
+
+        [Space]
+        [SerializeField] private AudioClip[] crashAudioClips;
+        [SerializeField] private AudioClip   gameOverAudioClip;
 
         [Header("UI References")]
         [SerializeField] private Image[] heartIcons = new Image[MAX_LIVES];
@@ -213,10 +218,14 @@ namespace FlyBit.Controllers
                 {
                     CameraEffectsController.Singleton.PlayShakeCamera(0.1f, 0.3f);
 
+                    audioSource.PlayOneShot(crashAudioClips[Random.Range(0, crashAudioClips.Length)], SettingsController.Singleton.EffectsVolume);
+
                     Revive();
                 }
                 else
                 {
+                    audioSource.PlayOneShot(gameOverAudioClip, SettingsController.Singleton.EffectsVolume);
+
                     Die();
                 }
             }
@@ -310,7 +319,12 @@ namespace FlyBit.Controllers
 #if UNITY_STANDALONE
                 shouldThrust = !MathE.IsPointerOverUIObject(Input.mousePosition) && (Input.GetMouseButton(0) || Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow));
 #elif UNITY_IOS || UNITY_ANDROID
+                if (Input.touchCount > 0)
+                {
+                    Touch touch = Input.GetTouch(0);
 
+                    shouldThrust = !MathE.IsPointerOverUIObject(touch.position);
+                }
 #endif
 
                 if (shouldThrust && !isThrusting && !PlayerEffectsController.Singleton.HasPlayerEffect(PlayerEffect.InfiniteFuel))
@@ -386,7 +400,17 @@ namespace FlyBit.Controllers
                 }
             }
 #elif UNITY_IOS || UNITY_ANDROID
+            if (Input.touchCount > 0)
+            {
+                Touch touch = Input.GetTouch(0);
 
+                if (!MathE.IsPointerOverUIObject(touch.position))
+                {
+                    Vector2 point = mainCamera.ScreenToWorldPoint(touch.position);
+
+                    direction = Mathf.Clamp(point.y - transform.position.y, -1f, 1f);
+                }
+            }
 #endif
 
             transform.position += Vector3.up * hyperdriveMoveSpeed * direction * Time.deltaTime;
@@ -400,6 +424,15 @@ namespace FlyBit.Controllers
         private void OnCollisionEnter2D(Collision2D collision)
         {
             Crash();
+        }
+
+        #endregion
+
+        #region Audio
+
+        public void PlayAudioClip(AudioClip audioClip, float volume)
+        {
+            audioSource.PlayOneShot(audioClip, volume);
         }
 
         #endregion

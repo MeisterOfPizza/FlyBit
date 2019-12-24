@@ -229,7 +229,6 @@ namespace FlyBit.Controllers
             float timeAliveHighScore        = StatController.Singleton.GetSetTimeAliveHighScore(timeAlive);
             float distanceTraveledHighScore = StatController.Singleton.GetSetDistanceTraveledHighScore(distanceTraveled);
 
-            // TODO: Get high score from db or local file.
             scoreFinalText.text            = string.Format("score: {0} ({1})", score, score > scoreHighScore ? "RECORD!" : "record is " + scoreHighScore);
             timeAliveFinalText.text        = string.Format("time alive: {0} ({1})", MathE.FormatTimeAlive(timeAlive).ToLower(), timeAlive > timeAliveHighScore ? "RECORD!" : "record is " + MathE.FormatTimeAlive(timeAliveHighScore).ToLower());
             distanceTraveledFinalText.text = string.Format("distance traveled: {0} m ({1})", distanceTraveled.ToString("F0"), distanceTraveled > distanceTraveledHighScore ? "RECORD!" : "record is " + distanceTraveledHighScore.ToString("F0") + " m");

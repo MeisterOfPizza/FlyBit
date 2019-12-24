@@ -1,5 +1,4 @@
 ﻿using FlyBit.Controllers;
-using UnityEngine;
 
 namespace FlyBit.PowerUps
 {

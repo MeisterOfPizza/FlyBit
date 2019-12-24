@@ -24,6 +24,8 @@ namespace FlyBit.UI
 
         private HashSet<ColorOption> colorOptionsCollection = new HashSet<ColorOption>();
 
+        private bool awakeCalled;
+
         #endregion
 
         #region Classes
@@ -60,9 +62,14 @@ namespace FlyBit.UI
 
         private void Awake()
         {
-            foreach (var option in colorOptions)
+            if (!awakeCalled)
             {
-                colorOptionsCollection.Add(option);
+                foreach (var option in colorOptions)
+                {
+                    colorOptionsCollection.Add(option);
+                }
+
+                awakeCalled = true;
             }
         }
 
@@ -93,6 +100,11 @@ namespace FlyBit.UI
 
         public void SetColor(bool invert)
         {
+            if (!awakeCalled)
+            {
+                Awake();
+            }
+
             foreach (var option in colorOptionsCollection)
             {
                 option.SetColor(invert);
