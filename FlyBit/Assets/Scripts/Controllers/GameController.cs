@@ -1,5 +1,5 @@
-﻿using TMPro;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.Rendering.PostProcessing;
 
 #pragma warning disable 0649
 
@@ -16,6 +16,9 @@ namespace FlyBit.Controllers
         [SerializeField] private GameObject gameScreen;
         [SerializeField] private GameObject deathScreen;
 
+        [Space]
+        [SerializeField] private PostProcessLayer mainCameraPostProcessLayer;
+
         #endregion
 
         #region Public properties
@@ -24,13 +27,19 @@ namespace FlyBit.Controllers
 
         #endregion
 
-        private void Start()
+        public override void OnAwake()
         {
+            base.OnAwake();
+
             // TODO: Set fullscreen for demos.
             Screen.fullScreen = true;
 
 #if UNITY_ANDROID || UNITY_IOS
-            Application.targetFrameRate = 60;
+            //Application.targetFrameRate = 60;
+            Application.targetFrameRate = 30;
+            mainCameraPostProcessLayer.enabled = false;
+#else
+            mainCameraPostProcessLayer.enabled = true;
 #endif
         }
 
