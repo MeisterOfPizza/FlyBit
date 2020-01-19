@@ -40,7 +40,17 @@ namespace FlyBit.Extensions
 
             if (timeAlive >= 60f)
             {
-                formattedTimeAlive += Mathf.FloorToInt(timeAlive / 60f) + " MIN AND " + (timeAlive % 60f).ToString("F0") + " SEC";
+                int seconds = (int)(timeAlive % 60f);
+
+                if (seconds > 0)
+                {
+                    formattedTimeAlive += Mathf.FloorToInt(timeAlive / 60f) + " MIN AND " + seconds + " SEC";
+                }
+                else
+                {
+                    formattedTimeAlive += Mathf.FloorToInt(timeAlive / 60f) + " MIN";
+                }
+                
             }
             else
             {

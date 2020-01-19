@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace FlyBit.Assets.Scripts.UI
+namespace FlyBit.UI
 {
 
     class UISmoothLayoutGroup : UIBehaviour
