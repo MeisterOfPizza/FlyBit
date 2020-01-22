@@ -117,11 +117,11 @@ namespace FlyBit.Map
             var possibleFormations = System.Enum.GetValues(typeof(SectionTemplate.SectionWallFormation)).Cast<byte>().Where(f => ((byte)template.PossibleFormations & f) == f);
             var formation          = possibleFormations.ElementAt(Random.Range(0, possibleFormations.Count()));
 
-            var columnPositions = CreateWallColumns(columnCount, (SectionTemplate.SectionWallFormation)formation);
-            SpawnSectionInteractables(columnPositions);
+            var columnAndWallPositions = CreateWallColumns(columnCount, (SectionTemplate.SectionWallFormation)formation);
+            SpawnSectionInteractables(columnAndWallPositions.Item1, columnAndWallPositions.Item2);
         }
 
-        private Vector2[] CreateWallColumns(int columnCount, SectionTemplate.SectionWallFormation formation)
+        private System.Tuple<Vector2[], Vector2[]> CreateWallColumns(int columnCount, SectionTemplate.SectionWallFormation formation)
         {
             Vector2[] columnPositions = new Vector2[columnCount];
             // Make the array two times as big as columnCount to accommodate for top wall and bottom wall positions.
@@ -248,10 +248,10 @@ namespace FlyBit.Map
                 column.Spawn(columnPositions[i], wallPositions[i * 2], wallPositions[i * 2 + 1]);
             }
 
-            return columnPositions;
+            return new System.Tuple<Vector2[], Vector2[]>(columnPositions, wallPositions);
         }
 
-        private void SpawnSectionInteractables(Vector2[] columnPositions)
+        private void SpawnSectionInteractables(Vector2[] columnPositions, Vector2[] wallPositions)
         {
             int scorePointCount = Mathf.Min(Random.Range(0, Mathf.FloorToInt(columnPositions.Length * template.MaxScorePointFrequency)), MapController.Singleton.ScorePointsAvailableToSpawn);
             int powerUpCount    = Random.Range(0, template.MaxPowerUpCount + 1);
@@ -272,7 +272,7 @@ namespace FlyBit.Map
             for (int i = 0; i < scorePointCount; i++)
             {
                 scorePoints[i]                    = MapController.Singleton.GetScorePoint();
-                scorePoints[i].transform.position = (Vector2)transform.position + columnPositions[indexes[i]];
+                scorePoints[i].transform.position = (Vector2)transform.position + columnPositions[indexes[i]] + new Vector2(0f, Random.Range(wallPositions[indexes[i] * 2 + 1].y / 2f, wallPositions[indexes[i] * 2].y / 2f));
             }
 
             // Assign positions to the unpooled power ups:
