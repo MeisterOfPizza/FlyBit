@@ -15,14 +15,18 @@ namespace FlyBit.Controllers
 
         #region Editor
 
-        [Header("References - Invert Colors")]
+        [Header("References - Main")]
         [SerializeField] private Camera         mainCamera;
         [SerializeField] private SpriteRenderer playerSpriteRenderer;
-        [SerializeField] private UIColorInvert  gameScreen;
-        [SerializeField] private UIColorInvert  deathScreen;
-        [SerializeField] private UIColorInvert  resetGameButton;
-        [SerializeField] private UIColorInvert  uiGainedScoreColorInvert;
-        [SerializeField] private UIColorInvert  uiPlayerEffectsColorInvert;
+
+        [Header("References - Invert Colors")]
+        [SerializeField] private UIColorInvert   menuScreen;
+        [SerializeField] private UIColorInvert   gameScreen;
+        [SerializeField] private UIColorInvert   deathScreen;
+        [SerializeField] private UIColorInvert   resetGameButton;
+        [SerializeField] private UIColorInvert   uiGainedScoreColorInvert;
+        [SerializeField] private UIColorInvert   uiPlayerEffectsColorInvert;
+        [SerializeField] private UIColorInvert[] uiSettingsColorInvert;
 
         [Space]
         [SerializeField] private TMP_FontAsset textFontAsset;
@@ -73,11 +77,17 @@ namespace FlyBit.Controllers
 
             mainCamera.backgroundColor = invertEffectIsOn ? Color.black : Color.white;
             playerSpriteRenderer.color = invertEffectIsOn ? Color.white : Color.black;
+            menuScreen.SetColor(invertEffectIsOn);
             gameScreen.SetColor(invertEffectIsOn);
             deathScreen.SetColor(invertEffectIsOn);
             resetGameButton.SetColor(invertEffectIsOn);
             uiGainedScoreColorInvert.SetColor(invertEffectIsOn);
             uiPlayerEffectsColorInvert.SetColor(invertEffectIsOn);
+
+            foreach (var colorInvert in uiSettingsColorInvert)
+            {
+                colorInvert.SetColor(invertEffectIsOn);
+            }
 
             textFontAsset.material.SetColor(ShaderUtilities.ID_UnderlayColor, invertEffectIsOn ? Color.white : Color.black);
 
