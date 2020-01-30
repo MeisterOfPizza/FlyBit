@@ -19,6 +19,9 @@ namespace FlyBit.Controllers
         [Space]
         [SerializeField] private PostProcessLayer mainCameraPostProcessLayer;
 
+        [Space]
+        [SerializeField] private AudioSource musicAudioSource;
+
         #endregion
 
         #region Public properties
@@ -41,6 +44,13 @@ namespace FlyBit.Controllers
 #else
             mainCameraPostProcessLayer.enabled = true;
 #endif
+        }
+
+        private void Start()
+        {
+            // Music
+            musicAudioSource.volume = SettingsController.Singleton.MusicVolume;
+            SettingsController.Singleton.OnMusicVolumeChanged += (float value) => { musicAudioSource.volume = value; };
         }
 
         public void StartMatch()
