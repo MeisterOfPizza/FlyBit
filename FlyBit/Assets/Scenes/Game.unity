@@ -13497,6 +13497,8 @@ MonoBehaviour:
   uiGainedScoreColorInvert: {fileID: 1702603768}
   uiPlayerEffectsColorInvert: {fileID: 1007142837}
   textFontAsset: {fileID: 11400000, guid: a9a1527b4e4f8ad46a83c13a1e4eb473, type: 2}
+  mouseIconBlack: {fileID: 2800000, guid: 902407bcc69bb2e458692e95ff5cad74, type: 3}
+  mouseIconWhite: {fileID: 2800000, guid: ebcaff66e2d7e1642830c8f776e50e62, type: 3}
   playerTransform: {fileID: 195887861}
   playerAnimator: {fileID: 195887865}
   playerCollider: {fileID: 195887863}
