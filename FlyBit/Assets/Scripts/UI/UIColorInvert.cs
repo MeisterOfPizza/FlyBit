@@ -33,7 +33,7 @@ namespace FlyBit.UI
         #region Classes
 
         [Serializable]
-        private class ColorOption
+        public class ColorOption
         {
 
             [SerializeField] private Color   defaultColor = Color.white;
@@ -61,7 +61,7 @@ namespace FlyBit.UI
         }
 
         [Serializable]
-        private class ButtonOption
+        public class ButtonOption
         {
 
             [SerializeField] private ColorBlock defaultColorBlock = ColorBlock.defaultColorBlock;
@@ -123,6 +123,14 @@ namespace FlyBit.UI
             foreach (var graphic in graphics)
             {
                 colorOptionsCollection.Add(new ColorOption(defaultColor, graphic));
+            }
+        }
+
+        public void AddColorOptions(ColorOption[] colorOptions)
+        {
+            foreach (var option in colorOptions)
+            {
+                colorOptionsCollection.Add(option);
             }
         }
 

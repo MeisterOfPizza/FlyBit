@@ -110,7 +110,7 @@ namespace FlyBit.Controllers
 
                 uiPlayerEffects.Add(playerEffect, uiPlayerEffect);
 
-                uiPlayerEffectsContainerColorInvert.AddColorOptions(Color.white, uiPlayerEffect.TargetGraphics);
+                uiPlayerEffectsContainerColorInvert.AddColorOptions(uiPlayerEffect.ColorOptions);
                 uiPlayerEffectsContainerColorInvert.SetColor(PlayerController.Singleton.Invert);
             }
         }
