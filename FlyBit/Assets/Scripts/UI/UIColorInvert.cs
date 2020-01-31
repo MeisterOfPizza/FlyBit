@@ -16,13 +16,15 @@ namespace FlyBit.UI
         #region Editor
 
         [Header("References")]
-        [SerializeField] private ColorOption[] colorOptions;
+        [SerializeField] private ColorOption[]  colorOptions;
+        [SerializeField] private ButtonOption[] buttonOptions;
 
         #endregion
 
         #region Private variables
 
-        private HashSet<ColorOption> colorOptionsCollection = new HashSet<ColorOption>();
+        private HashSet<ColorOption>  colorOptionsCollection  = new HashSet<ColorOption>();
+        private HashSet<ButtonOption> buttonOptionsCollection = new HashSet<ButtonOption>();
 
         private bool awakeCalled;
 
@@ -58,6 +60,39 @@ namespace FlyBit.UI
 
         }
 
+        [Serializable]
+        private class ButtonOption
+        {
+
+            [SerializeField] private ColorBlock defaultColorBlock = ColorBlock.defaultColorBlock;
+            [SerializeField] private Button     targetButton;
+
+            public Button Button
+            {
+                get
+                {
+                    return targetButton;
+                }
+            }
+
+            public void SetColor(bool invert)
+            {
+                ColorBlock colorBlock = new ColorBlock()
+                {
+                    normalColor      = invert ? defaultColorBlock.normalColor.Invert() : defaultColorBlock.normalColor,
+                    highlightedColor = invert ? defaultColorBlock.highlightedColor.Invert() : defaultColorBlock.highlightedColor,
+                    pressedColor     = invert ? defaultColorBlock.pressedColor.Invert() : defaultColorBlock.pressedColor,
+                    selectedColor    = invert ? defaultColorBlock.selectedColor.Invert() : defaultColorBlock.selectedColor,
+                    disabledColor    = invert ? defaultColorBlock.disabledColor.Invert() : defaultColorBlock.disabledColor,
+                    colorMultiplier  = defaultColorBlock.colorMultiplier,
+                    fadeDuration     = defaultColorBlock.fadeDuration
+                };
+
+                targetButton.colors = colorBlock;
+            }
+
+        }
+
         #endregion
 
         private void Awake()
@@ -67,6 +102,11 @@ namespace FlyBit.UI
                 foreach (var option in colorOptions)
                 {
                     colorOptionsCollection.Add(option);
+                }
+
+                foreach (var button in buttonOptions)
+                {
+                    buttonOptionsCollection.Add(button);
                 }
 
                 awakeCalled = true;
@@ -93,9 +133,10 @@ namespace FlyBit.UI
             colorOptionsCollection.Remove(option);
         }
 
-        public void ClearColorOptions()
+        public void ClearOptions()
         {
             colorOptionsCollection.Clear();
+            buttonOptionsCollection.Clear();
         }
 
         public void SetColor(bool invert)
@@ -108,6 +149,11 @@ namespace FlyBit.UI
             foreach (var option in colorOptionsCollection)
             {
                 option.SetColor(invert);
+            }
+
+            foreach (var button in buttonOptionsCollection)
+            {
+                button.SetColor(invert);
             }
         }
 

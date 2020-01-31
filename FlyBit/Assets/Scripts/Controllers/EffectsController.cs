@@ -20,13 +20,14 @@ namespace FlyBit.Controllers
         [SerializeField] private SpriteRenderer playerSpriteRenderer;
 
         [Header("References - Invert Colors")]
-        [SerializeField] private UIColorInvert   menuScreen;
-        [SerializeField] private UIColorInvert   gameScreen;
-        [SerializeField] private UIColorInvert   deathScreen;
-        [SerializeField] private UIColorInvert   resetGameButton;
-        [SerializeField] private UIColorInvert   uiGainedScoreColorInvert;
-        [SerializeField] private UIColorInvert   uiPlayerEffectsColorInvert;
-        [SerializeField] private UIColorInvert[] uiSettingsColorInvert;
+        [SerializeField] private UIColorInvert menuScreen;
+        [SerializeField] private UIColorInvert pauseScreen;
+        [SerializeField] private UIColorInvert settingsScreen;
+        [SerializeField] private UIColorInvert gameScreen;
+        [SerializeField] private UIColorInvert deathScreen;
+        [SerializeField] private UIColorInvert resetGameButton;
+        [SerializeField] private UIColorInvert uiGainedScoreColorInvert;
+        [SerializeField] private UIColorInvert uiPlayerEffectsColorInvert;
 
         [Space]
         [SerializeField] private TMP_FontAsset textFontAsset;
@@ -77,17 +78,15 @@ namespace FlyBit.Controllers
 
             mainCamera.backgroundColor = invertEffectIsOn ? Color.black : Color.white;
             playerSpriteRenderer.color = invertEffectIsOn ? Color.white : Color.black;
+
             menuScreen.SetColor(invertEffectIsOn);
+            pauseScreen.SetColor(invertEffectIsOn);
+            settingsScreen.SetColor(invertEffectIsOn);
             gameScreen.SetColor(invertEffectIsOn);
             deathScreen.SetColor(invertEffectIsOn);
             resetGameButton.SetColor(invertEffectIsOn);
             uiGainedScoreColorInvert.SetColor(invertEffectIsOn);
             uiPlayerEffectsColorInvert.SetColor(invertEffectIsOn);
-
-            foreach (var colorInvert in uiSettingsColorInvert)
-            {
-                colorInvert.SetColor(invertEffectIsOn);
-            }
 
             textFontAsset.material.SetColor(ShaderUtilities.ID_UnderlayColor, invertEffectIsOn ? Color.white : Color.black);
 

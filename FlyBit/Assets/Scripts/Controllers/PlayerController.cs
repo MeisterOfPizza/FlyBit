@@ -104,7 +104,7 @@ namespace FlyBit.Controllers
 
         private void Update()
         {
-            if (GameController.Singleton.IsMatchRunning && !IsDead && !isSpawning && !isReviving)
+            if (GameController.Singleton.IsMatchRunning && !GameController.Singleton.IsMatchPaused && !IsDead && !isSpawning && !isReviving)
             {
                 PlayerEffectsController.Singleton.UpdatePlayerEffects();
 
@@ -183,9 +183,12 @@ namespace FlyBit.Controllers
 
             while (timeLeft > 0f)
             {
-                UpdateFuelBar(1f - timeLeft / spawnInvisibilityTime);
+                if (!GameController.Singleton.IsMatchPaused)
+                {
+                    UpdateFuelBar(1f - timeLeft / spawnInvisibilityTime);
 
-                timeLeft -= Time.deltaTime;
+                    timeLeft -= Time.deltaTime;
+                }
 
                 yield return new WaitForEndOfFrame();
             }
@@ -270,9 +273,12 @@ namespace FlyBit.Controllers
 
             while (timeLeft > 0f)
             {
-                UpdateFuelBar(1f - timeLeft / reviveInvisibilityTime);
+                if (!GameController.Singleton.IsMatchPaused)
+                {
+                    UpdateFuelBar(1f - timeLeft / reviveInvisibilityTime);
 
-                timeLeft -= Time.deltaTime;
+                    timeLeft -= Time.deltaTime;
+                }
 
                 yield return new WaitForEndOfFrame();
             }
@@ -294,6 +300,14 @@ namespace FlyBit.Controllers
             IsDead = true;
 
             GameController.Singleton.EndMatch();
+        }
+
+        public void DieWithoutEndingMatch()
+        {
+            playerModel.gameObject.SetActive(false);
+            playerCollider.enabled = false;
+
+            IsDead = true;
         }
 
         public void GiveLife()
