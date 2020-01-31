@@ -96,7 +96,7 @@ namespace FlyBit.Controllers
                 }
             }
 
-            scorePointPool = new GameObjectPool<ScorePoint>(mapContainer, scorePointPrefab, templates.Length * 50);
+            scorePointPool = new GameObjectPool<ScorePoint>(mapContainer, scorePointPrefab, 100);
 
             foreach (var scorePoint in scorePointPool.PooledItemsNonAloc)
             {
@@ -117,6 +117,8 @@ namespace FlyBit.Controllers
         }
 
         #endregion
+
+        #region Moving the map
 
         public void MoveMap(Vector3 delta)
         {
@@ -150,6 +152,8 @@ namespace FlyBit.Controllers
                 }
             }
         }
+
+        #endregion
 
         #region Building the map
 

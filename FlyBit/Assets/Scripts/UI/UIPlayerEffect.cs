@@ -13,7 +13,8 @@ namespace FlyBit.UI
         #region Editor
 
         [Header("References")]
-        [SerializeField] private Image    iconImage;
+        [SerializeField] private Image    iconOutline;
+        [SerializeField] private Image    icon;
         [SerializeField] private TMP_Text durationText;
 
         #endregion
@@ -24,7 +25,20 @@ namespace FlyBit.UI
         {
             get
             {
-                return new Graphic[] { iconImage, durationText };
+                return new Graphic[] { iconOutline, icon, durationText };
+            }
+        }
+
+        public UIColorInvert.ColorOption[] ColorOptions
+        {
+            get
+            {
+                return new UIColorInvert.ColorOption[]
+                {
+                    new UIColorInvert.ColorOption(Color.black, iconOutline),
+                    new UIColorInvert.ColorOption(Color.white, icon),
+                    new UIColorInvert.ColorOption(Color.white, durationText)
+                };
             }
         }
 
@@ -32,7 +46,8 @@ namespace FlyBit.UI
 
         public void Initialize(Sprite icon, float duration)
         {
-            iconImage.sprite = icon;
+            this.icon.sprite        = icon;
+            this.iconOutline.sprite = icon;
             SetDurationText(duration);
         }
 
