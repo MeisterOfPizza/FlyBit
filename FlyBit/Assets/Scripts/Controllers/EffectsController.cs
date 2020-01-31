@@ -32,6 +32,9 @@ namespace FlyBit.Controllers
         [Space]
         [SerializeField] private TMP_FontAsset textFontAsset;
 
+        [SerializeField] private Texture2D mouseIconBlack;
+        [SerializeField] private Texture2D mouseIconWhite;
+
         [Header("References - Hyperdrive")]
         [SerializeField] private Transform    playerTransform;
         [SerializeField] private Animator     playerAnimator;
@@ -89,6 +92,8 @@ namespace FlyBit.Controllers
             uiPlayerEffectsColorInvert.SetColor(invertEffectIsOn);
 
             textFontAsset.material.SetColor(ShaderUtilities.ID_UnderlayColor, invertEffectIsOn ? Color.white : Color.black);
+
+            Cursor.SetCursor(invertEffectIsOn ? mouseIconWhite : mouseIconBlack, Vector2.zero, CursorMode.Auto);
 
             hyperdriveSpeedlines.InvertSpeedlineColors(invertEffectIsOn);
             hyperdriveWallSection.SetColor(invertEffectIsOn ? Color.white : Color.black);
