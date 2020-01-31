@@ -27,6 +27,7 @@ namespace FlyBit.Controllers
         #region Public properties
 
         public bool IsMatchRunning { get; private set; } = false;
+        public bool IsMatchPaused  { get; private set; } = false;
 
         #endregion
 
@@ -58,6 +59,7 @@ namespace FlyBit.Controllers
             if (!PlayerController.Singleton.IsSpawning && !PlayerController.Singleton.IsReviving)
             {
                 IsMatchRunning = true;
+                IsMatchPaused  = false;
 
                 menuScreen.SetActive(false);
                 gameScreen.SetActive(true);
@@ -73,14 +75,37 @@ namespace FlyBit.Controllers
 
         public void EndMatch()
         {
+            if (IsMatchRunning)
+            {
+                IsMatchRunning = false;
+                IsMatchPaused = false;
+
+                gameScreen.SetActive(false);
+                deathScreen.SetActive(true);
+
+                DifficultyController.Singleton.End();
+                ScoreController.Singleton.End(true);
+                MapController.Singleton.End();
+            }
+        }
+
+        public void PauseMatch(bool pause)
+        {
+            IsMatchPaused = pause;
+        }
+
+        public void AbortMatch()
+        {
             IsMatchRunning = false;
+            IsMatchPaused  = false;
 
             gameScreen.SetActive(false);
-            deathScreen.SetActive(true);
 
             DifficultyController.Singleton.End();
-            ScoreController.Singleton.End();
+            ScoreController.Singleton.End(false);
             MapController.Singleton.End();
+
+            PlayerController.Singleton.DieWithoutEndingMatch();
         }
 
     }

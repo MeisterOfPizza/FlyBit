@@ -30,6 +30,12 @@ namespace FlyBit.Controllers
         [SerializeField] private UISlider effectsVolumeSlider;
         [SerializeField] private UISlider miscVolumeSlider;
 
+        [Space]
+        [SerializeField] private GameObject settingsScreen;
+        [SerializeField] private GameObject mainMenu;
+        [SerializeField] private GameObject pauseMenu;
+        [SerializeField] private GameObject blurBackground;
+
         [Header("Values")]
         [SerializeField, Range(0f, 1f)] private float defaultMusicVolume   = 0.5f;
         [SerializeField, Range(0f, 1f)] private float defaultEffectsVolume = 0.5f;
@@ -100,13 +106,33 @@ namespace FlyBit.Controllers
             hasInitialized = true;
         }
 
+        public void OpenSettingsMenu()
+        {
+            blurBackground.SetActive(GameController.Singleton.IsMatchRunning);
+            settingsScreen.SetActive(true);
+        }
+
+        public void CloseSettingsMenu()
+        {
+            if (GameController.Singleton.IsMatchRunning)
+            {
+                pauseMenu.SetActive(true);
+            }
+            else
+            {
+                mainMenu.SetActive(true);
+            }
+
+            settingsScreen.SetActive(false);
+        }
+
         public void SetMusicVolume(float value)
         {
             if (hasInitialized)
             {
                 currentMusicVolume = value;
 
-                OnMusicVolumeChanged?.Invoke(value);
+                OnMusicVolumeChanged?.Invoke(MusicVolume);
 
                 SaveSettings();
             }
@@ -118,7 +144,7 @@ namespace FlyBit.Controllers
             {
                 currentEffectsVolume = value;
 
-                OnEffectsVolumeChanged?.Invoke(value);
+                OnEffectsVolumeChanged?.Invoke(EffectsVolume);
 
                 SaveSettings();
             }
@@ -130,7 +156,7 @@ namespace FlyBit.Controllers
             {
                 currentMiscVolume = value;
 
-                OnMiscVolumeChanged?.Invoke(value);
+                OnMiscVolumeChanged?.Invoke(MiscVolume);
 
                 SaveSettings();
             }

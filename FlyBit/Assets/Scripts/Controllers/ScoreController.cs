@@ -169,7 +169,7 @@ namespace FlyBit.Controllers
             }
         }
 
-        public void End()
+        public void End(bool updateStats)
         {
             timeAliveCounterIsPaused = true;
 
@@ -178,7 +178,7 @@ namespace FlyBit.Controllers
 
         private void Update()
         {
-            if (GameController.Singleton.IsMatchRunning && !PlayerController.Singleton.IsDead)
+            if (GameController.Singleton.IsMatchRunning && !GameController.Singleton.IsMatchPaused && !PlayerController.Singleton.IsDead)
             {
                 if (!timeAliveCounterIsPaused)
                 {
