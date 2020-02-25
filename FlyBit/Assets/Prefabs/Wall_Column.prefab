@@ -262,8 +262,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   topWall: {fileID: 8758200119371419583}
   bottomWall: {fileID: 8758200119857769403}
-  screenHeight: 6
-  moveWallTime: 1.25
+  moveWallTime: 2
 --- !u!61 &2099017868080098408
 BoxCollider2D:
   m_ObjectHideFlags: 0
