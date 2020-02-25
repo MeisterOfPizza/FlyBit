@@ -24,13 +24,13 @@ MonoBehaviour:
   maxWallColumnSpaceHeight: 5
   wallFormationScale: 0.4
   sectionPowerUps:
-  - spawnChance: 0.025
+  - spawnChance: 0.03
     prefab: {fileID: 6819765001158733578, guid: 7b6a3261f9366414f88952662c378c49,
       type: 3}
-  - spawnChance: 0.06
+  - spawnChance: 0.065
     prefab: {fileID: 6819765001158733578, guid: 8df2889580c2c9b4ca9d159dcd66dd48,
       type: 3}
-  - spawnChance: 0.1
+  - spawnChance: 0.13
     prefab: {fileID: 6819765001158733578, guid: fb0f7563af8d9f848a1f83ef2c966bfe,
       type: 3}
   - spawnChance: 0.05

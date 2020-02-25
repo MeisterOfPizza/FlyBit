@@ -108,6 +108,20 @@ namespace FlyBit.Controllers
             PlayerController.Singleton.DieWithoutEndingMatch();
         }
 
+        public void ExitGame()
+        {
+            if (!Application.isEditor)
+            {
+                Application.Quit();
+            }
+            else
+            {
+#if UNITY_EDITOR
+                UnityEditor.EditorApplication.isPlaying = false;
+#endif
+            }
+        }
+
     }
 
 }
