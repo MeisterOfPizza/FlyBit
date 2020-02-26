@@ -26,6 +26,11 @@ namespace FlyBit.Editor
                 {
                     EffectsController.Singleton.HyperdriveTravel();
                 }
+
+                if (GUILayout.Button("Extra Life Power Up"))
+                {
+                    PlayerController.Singleton.GiveLife();
+                }
             }
         }
 

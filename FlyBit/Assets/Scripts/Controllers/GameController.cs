@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using TMPro;
+using UnityEngine;
 using UnityEngine.Rendering.PostProcessing;
 
 #pragma warning disable 0649
@@ -15,6 +16,9 @@ namespace FlyBit.Controllers
         [SerializeField] private GameObject menuScreen;
         [SerializeField] private GameObject gameScreen;
         [SerializeField] private GameObject deathScreen;
+
+        [Space]
+        [SerializeField] private TMP_Text mainMenuHelpText;
 
         [Space]
         [SerializeField] private PostProcessLayer mainCameraPostProcessLayer;
@@ -41,9 +45,13 @@ namespace FlyBit.Controllers
 #if UNITY_ANDROID || UNITY_IOS
             //Application.targetFrameRate = 60;
             Application.targetFrameRate = 30;
+
             mainCameraPostProcessLayer.enabled = false;
+            mainMenuHelpText.text = "hold to go up";
 #else
             mainCameraPostProcessLayer.enabled = true;
+
+            mainMenuHelpText.text = "hold the left mouse button or space to go up";
 #endif
         }
 

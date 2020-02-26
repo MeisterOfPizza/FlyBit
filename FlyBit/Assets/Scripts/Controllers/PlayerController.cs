@@ -8,7 +8,7 @@ using UnityEngine.UI;
 namespace FlyBit.Controllers
 {
 
-    class PlayerController : Controller<PlayerController>
+    public class PlayerController : Controller<PlayerController>
     {
 
         #region Constants
