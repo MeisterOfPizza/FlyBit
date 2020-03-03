@@ -13625,6 +13625,7 @@ MonoBehaviour:
   menuScreen: {fileID: 1559573729}
   gameScreen: {fileID: 445989611}
   deathScreen: {fileID: 6426734}
+  exitButton: {fileID: 617346386}
   mainMenuHelpText: {fileID: 269964105}
   mainCameraPostProcessLayer: {fileID: 1687258586}
   musicAudioSource: {fileID: 1811132394}

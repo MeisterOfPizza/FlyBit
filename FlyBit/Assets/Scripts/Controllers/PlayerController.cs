@@ -330,7 +330,7 @@ namespace FlyBit.Controllers
             {
                 bool shouldThrust = false;
 
-#if UNITY_STANDALONE
+#if UNITY_STANDALONE || UNITY_WEBGL
                 shouldThrust = !MathE.IsPointerOverUIObject(Input.mousePosition) && (Input.GetMouseButton(0) || Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow));
 #elif UNITY_IOS || UNITY_ANDROID
                 if (Input.touchCount > 0)

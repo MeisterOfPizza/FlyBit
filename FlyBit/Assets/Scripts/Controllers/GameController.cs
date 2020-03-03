@@ -18,6 +18,9 @@ namespace FlyBit.Controllers
         [SerializeField] private GameObject deathScreen;
 
         [Space]
+        [SerializeField] private GameObject exitButton;
+
+        [Space]
         [SerializeField] private TMP_Text mainMenuHelpText;
 
         [Space]
@@ -47,11 +50,15 @@ namespace FlyBit.Controllers
             Application.targetFrameRate = 30;
 
             mainCameraPostProcessLayer.enabled = false;
-            mainMenuHelpText.text = "hold to go up";
+            mainMenuHelpText.text = "hold to go up\nremember to keep an eye on your fuel";
 #else
             mainCameraPostProcessLayer.enabled = true;
 
-            mainMenuHelpText.text = "hold the left mouse button or space to go up";
+            mainMenuHelpText.text = "hold the left mouse button or space to go up\nremember to keep an eye on your fuel";
+#endif
+
+#if !UNITY_STANDALONE
+            exitButton.SetActive(false);
 #endif
         }
 
